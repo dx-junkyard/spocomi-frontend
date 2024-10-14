@@ -1,0 +1,9 @@
+line-login:
+  client_id: "(LINE Developers console - LINEログインで作成したチャンネル - チャネルID"
+  client_secret: "(LINE Developers console - LINEログインで作成したチャンネル - チャネルシークレット"
+  line_token_url: "https://api.line.me/oauth2/v2.1/token"
+  line_login_url: "https://access.line.me/oauth2/v2.1/authorize?response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}"
+  login_redirect_uri: "https://molly-precise-satyr.ngrok-free.app/v1/auth"
+
+backend-api:
+  uri: "http://127.0.0.1:8080"
