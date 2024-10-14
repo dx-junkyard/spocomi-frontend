@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スポコミ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .filter-tags {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .filter-tags span {
+            background-color: #e0e0e0;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .community-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .community-card img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+        }
+        .community-card h2 {
+            font-size: 1.2em;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .community-card p {
+            font-size: 1em;
+            color: #666;
+            text-align: left;
+        }
+        .hamburger-menu {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        .hamburger-menu div {
+            width: 100%;
+            height: 4px;
+            background-color: #333;
+            margin: 5px 0;
+        }
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            color: white;
+            transition: 0.3s;
+            z-index: 1000;
+            padding-top: 60px;
+        }
+        .side-menu a {
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 1.2em;
+            color: white;
+            display: block;
+        }
+        .side-menu a:hover {
+            background-color: #575757;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+        @media (min-width: 600px) {
+            .community-card {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .community-card img {
+                width: 40%;
+            }
+            .community-card h2, .community-card p {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- タイトル -->
+    <h1>スポコミ</h1>
+
+    <!-- 検索窓 -->
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="キーワードで検索..." oninput="filterCommunities()">
+        </div>
+        
+        <!-- タグフィルター -->
+        <div class="filter-tags">
+            <span onclick="filterByTag('サッカー')">サッカー</span>
+            <span onclick="filterByTag('バドミントン')">バドミントン</span>
+            <span onclick="filterByTag('ランニング')">ランニング</span>
+        </div>
+
+        <!-- コミュニティ1 -->
+        <div class="community-card" data-tags="サッカー">
+            <img src="community1.jpg" alt="Community 1">
+            <div>
+                <a href="spocomi_community_visitor.html">
+                    <h2>サッカー愛好会</h2>
+                </a>
+                <p>毎週日曜に集まり、地域の子どもたちと一緒にサッカーを楽しんでいます。</p>
+            </div>
+        </div>
+
+        <!-- コミュニティ2 -->
+        <div class="community-card" data-tags="バドミントン">
+            <img src="community2.jpg" alt="Community 2">
+            <div>
+                <h2>バドミントン交流会</h2>
+                <p>初めての方も大歓迎！みんなで楽しくバドミントンをしましょう。</p>
+            </div>
+        </div>
+
+        <!-- コミュニティ3 -->
+        <div class="community-card" data-tags="ランニング">
+            <img src="community3.jpg" alt="Community 3">
+            <div>
+                <h2>トレイルランニングチーム</h2>
+                <p>自然の中を走り、心も体もリフレッシュ！初心者も大歓迎です。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ハンバーガーメニュー -->
+    <div class="hamburger-menu" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu" id="side-menu">
+        <a href="spocomi_home.html">ホーム</a>
+        <a href="spocomi_community_list.html">コミュニティ一覧</a>
+        <a href="#event-list">イベント一覧</a>
+        <a href="#create-community">コミュニティ作成</a>
+        <a href="#create-event">イベント作成</a>
+        <a href="#networking">ネットワーキング</a>
+    </div>
+
+    <!-- オーバーレイ -->
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <script>
+        // ハンバーガーメニューの開閉
+        function toggleMenu() {
+            const sideMenu = document.getElementById('side-menu');
+            const overlay = document.getElementById('overlay');
+            if (sideMenu.style.left === '0px') {
+                sideMenu.style.left = '-250px';
+                overlay.style.display = 'none';
+            } else {
+                sideMenu.style.left = '0';
+                overlay.style.display = 'block';
+            }
+        }
+
+        // コミュニティ検索
+        function filterCommunities() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const communityCards = document.querySelectorAll('.community-card');
+            
+            communityCards.forEach(card => {
+                const title = card.querySelector('h2').innerText.toLowerCase();
+                const description = card.querySelector('p').innerText.toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchInput) || description.includes(searchInput) || tags.includes(searchInput)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // タグフィルタリング
+        function filterByTag(tag) {
+            const communityCards = document.querySelectorAll('.community-card');
+            
+            communityCards.forEach(card => {
+                const tags = card.getAttribute('data-tags').split(' ');
+                if (tags.includes(tag)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
+
