@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コミュニティ登録フォーム</title>
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    /* Form container */
+    .form-container {
+      background-color: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 0 auto;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+    }
+
+    /* Form title */
+    h1 {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #8259f1;
+    }
+
+    /* Form fields */
+    label {
+      display: block;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      background-color: #8259f1;
+      color: white;
+      font-size: 1.2em;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 0;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #6e46d1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h1>コミュニティ登録</h1>
+  <form action="/registerCommunity" method="post">
+    <!-- コミュニティ名 -->
+    <label for="name">コミュニティ名</label>
+    <input type="text" id="name" name="name" required>
+
+    <!-- 概要メッセージ -->
+    <label for="summaryMessage">概要メッセージ</label>
+    <input type="text" id="summaryMessage" name="summaryMessage" required>
+
+    <!-- PR文 -->
+    <label for="summaryPr">PR文</label>
+    <input type="text" id="summaryPr" name="summaryPr" required>
+
+    <!-- 説明文 -->
+    <label for="description">説明文</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+
+    <!-- 画像URL -->
+    <label for="imageUrl">画像URL</label>
+    <input type="text" id="imageUrl" name="imageUrl">
+
+    <!-- メンバー数 -->
+    <label for="memberCount">メンバー数</label>
+    <input type="number" id="memberCount" name="memberCount" min="1" value="1" required>
+
+    <!-- 公開範囲 -->
+    <label for="visibility">公開範囲</label>
+    <select id="visibility" name="visibility" required>
+      <option value="1">公開</option>
+      <option value="2">非公開</option>
+      <option value="3">承認制</option>
+    </select>
+
+    <!-- Submit button -->
+    <button type="submit" class="submit-btn">登録する</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // localStorage からトークンを取得
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // hidden フィールドにトークンをセット
+      document.getElementById('authToken').value = token;
+    }
+
+    // フォーム送信時に hidden フィールドにトークンを含める
+    document.getElementById('community-form').addEventListener('submit', function(event) {
+      if (!token) {
+        event.preventDefault();
+        alert('認証トークンが存在しません。ログインしてください。');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
