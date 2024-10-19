@@ -1,6 +1,7 @@
 package com.dxjunkyard.spocomi.service;
 
 import com.dxjunkyard.spocomi.api.client.LineLoginRestClient;
+import com.dxjunkyard.spocomi.api.client.UserRestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,15 @@ public class UserService {
     @Autowired
     private LineLoginRestClient lineLoginRestClient;
 
-    @Value("${encrypt.volunteerdb.key}")
-    private String encrypt_key;
+    @Autowired
+    private UserRestClient userRestClient;
+
+    /*
+     * lineIdからトークンを取得する
+     */
+    public String createUserIfNotExist(String lineId) {
+        return userRestClient.getTokenByLineId(lineId);
+    }
 
     /*
      * ユーザーの新規作成（ユーザー情報は空）

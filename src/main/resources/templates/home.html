@@ -118,6 +118,7 @@
     </style>
 </head>
 <body>
+    <meta name="auth-token" th:content="${token}">
     <!-- タイトル -->
     <h1>スポコミ</h1>
 
@@ -175,7 +176,7 @@
         <a href="spocomi_home.html">ホーム</a>
         <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
         <a href="#event-list">イベント一覧</a>
-        <a href="#create-community">コミュニティ作成</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
         <a href="#create-event">イベント作成</a>
         <a href="#networking">ネットワーキング</a>
     </div>
@@ -184,6 +185,12 @@
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <script>
+        // トークンをlocalStorageに保存する
+        const token = document.querySelector('meta[name="auth-token"]').content;
+        if (token) {
+            localStorage.setItem('authToken', token);
+        }
+
         // ハンバーガーメニューの開閉
         function toggleMenu() {
             const sideMenu = document.getElementById('side-menu');

@@ -1,247 +1,274 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スポコミ</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans JP', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f5f5f5;
         }
-        .container {
-            width: 100%;
-            margin: 0 auto;
-            padding: 10px;
-        }
-        h1 {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .search-bar input {
-            width: 100%;
-            padding: 10px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 100%;
-        }
-        .filter-tags {
-            margin-bottom: 20px;
+        /* Header */
+        .header {
+            background-color: #8259f1;
+            color: white;
             display: flex;
-            flex-wrap: wrap;
-        }
-        .filter-tags span {
-            background-color: #e0e0e0;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-        .community-card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px auto;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            width: 100%;
+            padding: 15px;
+            font-size: 0.9em;
+            position: sticky; /* Keep the header fixed at the top */
+            top: 0;
+            z-index: 10;
         }
-        .community-card img {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 8px;
-        }
-        .community-card h2 {
-            font-size: 1.2em;
-            margin: 10px 0;
-            text-align: left;
-        }
-        .community-card p {
-            font-size: 1em;
-            color: #666;
-            text-align: left;
+        .header h1 {
+            margin: 0;
+            font-weight: bold;
         }
         .hamburger-menu {
-            position: absolute;
-            top: 10px;
-            left: 10px;
             width: 30px;
             height: 30px;
             cursor: pointer;
         }
         .hamburger-menu div {
             width: 100%;
-            height: 4px;
-            background-color: #333;
-            margin: 5px 0;
+            height: 3px;
+            background-color: white;
+            margin: 6px 0;
         }
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100%;
-            background-color: #333;
-            color: white;
-            transition: 0.3s;
-            z-index: 1000;
-            padding-top: 60px;
+        .hamburger-menu div:nth-child(2) {
+            width: 80%; /* 2本目の幅を短くする */
+            margin-left: auto; /* 右寄せにする */
         }
-        .side-menu a {
+        
+        .hamburger-menu div:nth-child(3) {
+            width: 60%; /* 3本目の幅を短くする */
+            margin-left: auto; /* 右寄せにする */
+        }
+
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            font-size: 0.9em;
+            padding: 0 20px;
+            position: sticky; /* Fix the search bar */
+            top: 65px; /* Stick the search bar below the header */
+            background-color: #f5f5f5;
+            z-index: 9; /* Ensure the search bar is on top of the scrolling content */
+            padding-bottom: 10px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for clarity */
+        }
+        .search-bar input {
+            width: 70%;
+            padding: 10px;
+            font-size: 0.7em;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .search-bar button {
+            margin-left: 10px;
             padding: 10px 20px;
-            text-decoration: none;
-            font-size: 1.2em;
+            background-color: #8259f1;
             color: white;
-            display: block;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8em;
         }
-        .side-menu a:hover {
-            background-color: #575757;
+
+        /* Tag Filters */
+        .tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 0 20px;
+            position: sticky; /* Fix the tag filters */
+            top: 130px; /* Stick the tags below the search bar */
+            background-color: #f5f5f5;
+            z-index: 8; /* Ensure the tags are above the cards */
+            padding-bottom: 10px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for clarity */
         }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .tags span {
+            background-color: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.8em;
+            cursor: pointer;
+            color: #5b4a99;
+            background-color: #e0e0f8;
+        }
+
+        /* Community Cards Container */
+        .community-cards-container {
+            flex-grow: 1;
+            height: 400px; /* Set the height for the scrollable area */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px; /* Add some padding for the scrollable container */
+            margin: 0 auto;
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+            height: calc(100vh - 200px);
+        }
+
+        /* Community Cards */
+        .community-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* 画像を表示し、グラデーションとテキストを追加 */
+        .community-card .image-container {
+            position: relative;
+        }
+
+        .community-card img {
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 999;
+            border-radius: 15px;
         }
-        @media (min-width: 600px) {
-            .community-card {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-            .community-card img {
-                width: 40%;
-            }
-            .community-card h2, .community-card p {
-                text-align: left;
-            }
+
+        .community-card .overlay-text {
+            position: absolute;
+            bottom: 0;
+            width: calc(100% - 20px);
+            padding: 10px;
+            color: white;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        /* 星型のマーク */
+        .community-card .favorite-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2.5em;
+            color: gray;
+            cursor: pointer;
+        }
+
+        .favorite-icon.active {
+            color: yellow;
+        }
+
+        .community-card h2 {
+            font-size: 1.3em;
+            margin: 15px 0 5px;
+        }
+
+        .community-card p {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+            padding-bottom: 40px;
+        }
+
+        /* ボタンを少し細くする */
+        .community-card button {
+            background-color: #8259f1;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 6px 35px;
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        /* Load More Section */
+        .load-more {
+            text-align: center;
+            margin: 20px;
+            color: #8e7cc3;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #8e7cc3;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <!-- タイトル -->
-    <h1>スポコミ</h1>
-
-    <!-- 検索窓 -->
-    <div class="container">
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="キーワードで検索..." oninput="filterCommunities()">
-        </div>
-        
-        <!-- タグフィルター -->
-        <div class="filter-tags">
-            <span onclick="filterByTag('サッカー')">サッカー</span>
-            <span onclick="filterByTag('バドミントン')">バドミントン</span>
-            <span onclick="filterByTag('ランニング')">ランニング</span>
-        </div>
-
-        <!-- コミュニティ1 -->
-        <div class="community-card" data-tags="サッカー">
-            <img src="community1.jpg" alt="Community 1">
-            <div>
-                <a href="spocomi_community_visitor.html">
-                    <h2>サッカー愛好会</h2>
-                </a>
-                <p>毎週日曜に集まり、地域の子どもたちと一緒にサッカーを楽しんでいます。</p>
-            </div>
-        </div>
-
-        <!-- コミュニティ2 -->
-        <div class="community-card" data-tags="バドミントン">
-            <img src="community2.jpg" alt="Community 2">
-            <div>
-                <h2>バドミントン交流会</h2>
-                <p>初めての方も大歓迎！みんなで楽しくバドミントンをしましょう。</p>
-            </div>
-        </div>
-
-        <!-- コミュニティ3 -->
-        <div class="community-card" data-tags="ランニング">
-            <img src="community3.jpg" alt="Community 3">
-            <div>
-                <h2>トレイルランニングチーム</h2>
-                <p>自然の中を走り、心も体もリフレッシュ！初心者も大歓迎です。</p>
-            </div>
+    <!-- Header -->
+    <div class="header">
+        <h1>スポコミ</h1>
+        <div class="hamburger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
     </div>
 
-    <!-- ハンバーガーメニュー -->
-    <div class="hamburger-menu" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="text" placeholder="サークル名・スポーツ名で検索">
+        <button>検索</button>
     </div>
 
-    <!-- サイドメニュー -->
-    <div class="side-menu" id="side-menu">
-        <a href="spocomi_home.html">ホーム</a>
-        <a href="spocomi_community_list.html">コミュニティ一覧</a>
-        <a href="#event-list">イベント一覧</a>
-        <a href="#create-community">コミュニティ作成</a>
-        <a href="#create-event">イベント作成</a>
-        <a href="#networking">ネットワーキング</a>
+    <!-- Tag Filters -->
+    <div class="tags">
+        <span>#軽スポーツ</span>
+        <span>#球技</span>
+        <span>#シニア歓迎</span>
+        <span>#公園</span>
+        <span>#体育館</span>
+        <span>#都市内</span>
     </div>
 
-    <!-- オーバーレイ -->
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <!-- Community Card -->
+    <div class="community-card-container">
+        <div th:each="communitySummary : ${communitySummaryList}" class="community-card">
+            <div class="image-container">
+                <img src="community1.jpg" th:alt="${communitySummary.name}">
+                <!-- 下1/3のグラデーションに重ねたテキスト -->
+                <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
+                <!-- 星型マーク -->
+                <span class="favorite-icon" onclick="toggleFavorite(this)">★</span>
+            </div>
+            <h2 th:text="${communitySummary.name}"></h2>
+            <p th:text="${communitySummary.summaryMessage}"></p>
+            <button>詳しくみる</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        ©spocomi
+    </div>
 
     <script>
-        // ハンバーガーメニューの開閉
-        function toggleMenu() {
-            const sideMenu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            if (sideMenu.style.left === '0px') {
-                sideMenu.style.left = '-250px';
-                overlay.style.display = 'none';
-            } else {
-                sideMenu.style.left = '0';
-                overlay.style.display = 'block';
-            }
-        }
-
-        // コミュニティ検索
-        function filterCommunities() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const communityCards = document.querySelectorAll('.community-card');
-            
-            communityCards.forEach(card => {
-                const title = card.querySelector('h2').innerText.toLowerCase();
-                const description = card.querySelector('p').innerText.toLowerCase();
-                const tags = card.getAttribute('data-tags').toLowerCase();
-                
-                if (title.includes(searchInput) || description.includes(searchInput) || tags.includes(searchInput)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        // タグフィルタリング
-        function filterByTag(tag) {
-            const communityCards = document.querySelectorAll('.community-card');
-            
-            communityCards.forEach(card => {
-                const tags = card.getAttribute('data-tags').split(' ');
-                if (tags.includes(tag)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+        // お気に入りの星型アイコンをクリックすると黄色に変更
+        function toggleFavorite(element) {
+            element.classList.toggle('active');
         }
     </script>
 
