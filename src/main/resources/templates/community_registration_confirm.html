@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コミュニティ登録フォーム</title>
+    <title>コミュニティ登録内容</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
     <style>
         body {
@@ -123,59 +123,47 @@
     </style>
 </head>
 <body>
-
     <div class="form-container">
-        <h1>コミュニティ登録</h1>
-        <form th:action="@{/v1/community/new}" method="post" th:object="${community}">
+        <h1>コミュニティ情報</h1>
+        <form th:object="${community}">
             <!-- コミュニティ名 -->
-            <label for="name">コミュニティ名</label>
-            <input type="text" id="name" th:field="*{name}" required>
+            <label>コミュニティ名</label>
+            <p class="input-value" th:text="*{name}"></p>
 
             <!-- 概要メッセージ -->
-            <label for="summaryMessage">概要メッセージ</label>
-            <input type="text" id="summaryMessage" th:field="*{summaryMessage}" required>
+            <label>概要メッセージ</label>
+            <p class="input-value" th:text="*{summaryMessage}"></p>
 
             <!-- PR文 -->
-            <label for="summaryPr">PR文</label>
-            <input type="text" id="summaryPr" th:field="*{summaryPr}" required>
+            <label>PR文</label>
+            <p class="input-value" th:text="*{summaryPr}"></p>
 
             <!-- 説明文 -->
-            <label for="description">説明文</label>
-            <textarea id="description" th:field="*{description}" rows="4" required></textarea>
+            <label>説明文</label>
+            <p class="input-value" th:text="*{description}"></p>
 
-            <!-- tags -->
-            <label for="tags">タグ</label>
-            <input type="text" id="tags" name="tags" placeholder="テニス, 鬼ごっこ">
-
-            <!-- 画像アップロード -->
-            <div class="image-upload">
-                <label>コミュニティ画像</label>
-
-                <!-- 画像プレビューボックス -->
-                <div class="image-preview" id="imagePreview">
-                    <span>ここに画像が表示されます</span>
-                </div>
-
-                <!-- アップロードボタン -->
-                <label class="upload-btn" for="imageUpload">画像をアップロード</label>
-                <input type="file" id="imageUpload" name="imageUrl" accept="image/*" onchange="previewImage(event)">
+            <!-- 画像 -->
+            <label>コミュニティ画像</label>
+            <div class="image-preview">
+                <img th:src="*{profileImageUrl}" alt="Uploaded Image" style="max-width: 100%; max-height: 200px;">
             </div>
 
             <!-- メンバー数 -->
-            <label for="memberCount">メンバー数</label>
-            <input type="number" id="memberCount" name="memberCount" min="1" value="1" required>
+            <label>メンバー数</label>
+            <p class="input-value" th:text="*{memberCount}"></p>
 
             <!-- 公開範囲 -->
-            <label for="visibility">公開範囲</label>
-            <select id="visibility" th:field="*{visibility}" required>
-                <option value="1">公開</option>
-                <option value="2">地域限定</option>
-                <option value="3">承認制</option>
-            </select>
-
-            <!-- Submit button -->
-            <button type="submit" class="submit-btn">登録する</button>
+            <label>公開範囲</label>
+            <p>
+                <span class="input-value" th:if="*{visibility} == 1">公開</span>
+                <span class="input-value" th:if="*{visibility} == 2">地域限定</span>
+                <span class="input-value" th:if="*{visibility} == 3">承認制</span>
+            </p>
         </form>
+    </div>
+
+    <div class="buttons">
+        <a th:href="@{/v1/community/{id}/community-home(id=${community.id})}" class="submit-button">OK</a>
     </div>
 
     <!-- サイドメニュー -->
