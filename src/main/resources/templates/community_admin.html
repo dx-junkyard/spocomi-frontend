@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コミュニティ紹介ページ</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>スポコミ</h1>
+        <div class="hamburger-menu"  onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" th:object="${community}">
+
+        <!-- Community Photo -->
+        <div class="community-photo">
+            <!-- Placeholder when no image is uploaded -->
+            <img src="community-photo.jpg" alt="コミュニティの写真がありません" onerror="this.style.display='none';">
+        </div>
+
+        <!-- Community Info -->
+        <div class="community-info">
+            <h2>サッカー愛好会</h2>
+            <p>サッカー愛好会は、地域の子どもたちから大人まで誰でも楽しめるコミュニティです。毎週日曜に集まり、楽しくサッカーをプレイしています。初心者も大歓迎！体を動かしてリフレッシュしましょう！</p>
+        </div>
+
+        <!-- Activity Schedule -->
+        <div class="activity-schedule">
+            <h3>直近の活動予定</h3>
+            <ul>
+                <li>
+                    10月15日（日） - サッカー交流会 10:00 AM @中央公園
+                    <button class="invite-button"  onclick="showInviteDialog()">招待</button>
+                </li>
+                <li>
+                    10月22日（日） - 練習試合 10:00 AM @西町グラウンド
+                    <button class="invite-button"  onclick="showInviteDialog()">招待</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Activity History -->
+        <div class="activity-history">
+            <h3>活動履歴</h3>
+            <ul>
+                <li>9月30日（日） - 親子サッカー大会</li>
+                <li>9月17日（日） - フットサル交流戦</li>
+            </ul>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button class="event-button" data-community-id="${community.id}">イベント作成</button>
+            <button class="message-button">招待リンク</button>
+            <button class="network-button">連携</button>
+        </div>
+
+    </div>
+
+    <div id="inviteModal" class="modal">
+        <div class="modal-content">
+            <p>2人がサッカー愛好会に興味を持っています。<br>10月15日のサッカー交流会に招待しますか？</p>
+            <button class="yes-btn" onclick="closeInviteDialog()">はい</button>
+            <button class="no-btn" onclick="closeInviteDialog()">いいえ</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        ©spocomi
+    </div>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu" id="side-menu">
+        <a th:href="@{/v1/mypage}">マイPage</a>
+        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+        <a th:href="@{/v1/event/new}">イベント作成</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script>
+        // Function to show the invite dialog
+        function showInviteDialog() {
+            document.getElementById('inviteModal').style.display = 'flex';
+        }
+
+        // Function to close the invite dialog
+        function closeInviteDialog() {
+            document.getElementById('inviteModal').style.display = 'none';
+        }
+        document.querySelector('.event-button').addEventListener('click', function() {
+            const eventId = '123'; // ここに動的に変更したい変数の値を設定します。
+            const baseUrl = '@{/v1/event/new}'; // Thymeleafテンプレートの基本URL
+
+            // URLにクエリパラメータとしてeventIdを追加
+            const url = `${baseUrl}?eventId=${eventId}`;
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>
+

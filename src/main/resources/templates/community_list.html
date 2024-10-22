@@ -3,218 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
     <title>スポコミ</title>
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        /* Header */
-        .header {
-            background-color: #8259f1;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            font-size: 0.9em;
-            position: sticky; /* Keep the header fixed at the top */
-            top: 0;
-            z-index: 10;
-        }
-        .header h1 {
-            margin: 0;
-            font-weight: bold;
-        }
-        .hamburger-menu {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-        }
-        .hamburger-menu div {
-            width: 100%;
-            height: 3px;
-            background-color: white;
-            margin: 6px 0;
-        }
-        .hamburger-menu div:nth-child(2) {
-            width: 80%; /* 2本目の幅を短くする */
-            margin-left: auto; /* 右寄せにする */
-        }
-        
-        .hamburger-menu div:nth-child(3) {
-            width: 60%; /* 3本目の幅を短くする */
-            margin-left: auto; /* 右寄せにする */
-        }
-
-
-        /* Search Bar */
-        .search-bar {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-            font-size: 0.9em;
-            padding: 0 20px;
-            position: sticky; /* Fix the search bar */
-            top: 65px; /* Stick the search bar below the header */
-            background-color: #f5f5f5;
-            z-index: 9; /* Ensure the search bar is on top of the scrolling content */
-            padding-bottom: 10px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for clarity */
-        }
-        .search-bar input {
-            width: 70%;
-            padding: 10px;
-            font-size: 0.7em;
-            border: none;
-            border-radius: 25px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .search-bar button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            background-color: #8259f1;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.8em;
-        }
-
-        /* Tag Filters */
-        .tags {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding: 0 20px;
-            position: sticky; /* Fix the tag filters */
-            top: 130px; /* Stick the tags below the search bar */
-            background-color: #f5f5f5;
-            z-index: 8; /* Ensure the tags are above the cards */
-            padding-bottom: 10px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for clarity */
-        }
-        .tags span {
-            background-color: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 25px;
-            font-size: 0.8em;
-            cursor: pointer;
-            color: #5b4a99;
-            background-color: #e0e0f8;
-        }
-
-        /* Community Cards Container */
-        .community-cards-container {
-            flex-grow: 1;
-            height: 400px; /* Set the height for the scrollable area */
-            overflow-y: auto; /* Enable vertical scrolling */
-            padding: 20px; /* Add some padding for the scrollable container */
-            margin: 0 auto;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
-            height: calc(100vh - 200px);
-        }
-
-        /* Community Cards */
-        .community-card {
-            background-color: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        /* 画像を表示し、グラデーションとテキストを追加 */
-        .community-card .image-container {
-            position: relative;
-        }
-
-        .community-card img {
-            width: 100%;
-            border-radius: 15px;
-        }
-
-        .community-card .overlay-text {
-            position: absolute;
-            bottom: 0;
-            width: calc(100% - 20px);
-            padding: 10px;
-            color: white;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            font-size: 0.9em;
-        }
-
-        /* 星型のマーク */
-        .community-card .favorite-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 2.5em;
-            color: gray;
-            cursor: pointer;
-        }
-
-        .favorite-icon.active {
-            color: yellow;
-        }
-
-        .community-card h2 {
-            font-size: 1.3em;
-            margin: 15px 0 5px;
-        }
-
-        .community-card p {
-            font-size: 0.9em;
-            color: #555;
-            margin-bottom: 10px;
-            padding-bottom: 40px;
-        }
-
-        /* ボタンを少し細くする */
-        .community-card button {
-            background-color: #8259f1;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 6px 35px;
-            position: absolute;
-            right: 20px;
-            bottom: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-
-        /* Load More Section */
-        .load-more {
-            text-align: center;
-            margin: 20px;
-            color: #8e7cc3;
-            cursor: pointer;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: #8e7cc3;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: sticky;
-            bottom: 0;
-            z-index: 10;
-        }
-    </style>
 </head>
 <body>
 
@@ -248,7 +38,8 @@
     <div class="community-card-container">
         <div th:each="communitySummary : ${communitySummaryList}" class="community-card">
             <div class="image-container">
-                <img src="community1.jpg" th:alt="${communitySummary.name}">
+                <img th:src="${communitySummary.summaryImageUrl}" th:alt="${communitySummary.name}">
+                <!--img th:src="@{/img/1.png}" th:alt="${communitySummary.name}"-->
                 <!-- 下1/3のグラデーションに重ねたテキスト -->
                 <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
                 <!-- 星型マーク -->
@@ -264,7 +55,16 @@
     <div class="footer">
         ©spocomi
     </div>
-
+    <!-- サイドメニュー -->
+    <div class="side-menu" id="side-menu">
+        <a th:href="@{/v1/mypage}">マイPage</a>
+        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <script th:src="@{/js/spocomi_menu.js}"></script>
     <script>
         // お気に入りの星型アイコンをクリックすると黄色に変更
         function toggleFavorite(element) {

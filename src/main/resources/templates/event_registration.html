@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コミュニティ登録フォーム</title>
+    <title>イベント登録フォーム</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
     <style>
         body {
@@ -125,22 +125,28 @@
 <body>
 
     <div class="form-container">
-        <h1>コミュニティ登録</h1>
-        <form th:action="@{/v1/community/new}" method="post" th:object="${community}">
-            <!-- コミュニティ名 -->
-            <label for="name">コミュニティ名</label>
-            <input type="text" id="name" th:field="*{name}" required>
+        <h1>イベント作成</h1>
+        <form th:action="@{/v1/event/new}" method="post" th:object="${event}">
+            <!-- イベント名 -->
+            <label for="name">イベント名</label>
+            <input type="text" id="name" th:field="*{title}" required>
 
-            <!-- 概要メッセージ -->
-            <label for="summaryMessage">概要メッセージ</label>
-            <input type="text" id="summaryMessage" th:field="*{summaryMessage}" required>
+            <!-- 開催日時 -->
+            <label for="date">開催日</label>
+            <input type="date" id="date" name="date" th:field="*{eventDate}" required>
 
-            <!-- PR文 -->
-            <label for="summaryPr">PR文</label>
-            <input type="text" id="summaryPr" th:field="*{summaryPr}" required>
+            <label for="startTime">開始時間</label>
+            <input type="time" id="startTime" name="startTime" th:field="*{eventStartTime}" required>
+
+            <label for="endTime">終了時間</label>
+            <input type="time" id="endTime" name="endTime" th:field="*{eventEndTime}" required>
+
+            <!-- 募集メッセージ -->
+            <label for="recruitmentMessage">PR文</label>
+            <input type="text" id="recruitmentMessage" th:field="*{recruitmentMessage}" required>
 
             <!-- 説明文 -->
-            <label for="description">説明文</label>
+            <label for="description">イベント説明文</label>
             <textarea id="description" th:field="*{description}" rows="4" required></textarea>
 
             <!-- tags -->
@@ -149,7 +155,7 @@
 
             <!-- 画像アップロード -->
             <div class="image-upload">
-                <label>コミュニティ画像</label>
+                <label>イメージ画像</label>
 
                 <!-- 画像プレビューボックス -->
                 <div class="image-preview" id="imagePreview">
@@ -160,10 +166,6 @@
                 <label class="upload-btn" for="imageUpload">画像をアップロード</label>
                 <input type="file" id="imageUpload" name="imageUrl" accept="image/*" onchange="previewImage(event)">
             </div>
-
-            <!-- メンバー数 -->
-            <label for="memberCount">メンバー数</label>
-            <input type="number" id="memberCount" name="memberCount" min="1" value="1" required>
 
             <!-- 公開範囲 -->
             <label for="visibility">公開範囲</label>
@@ -183,7 +185,6 @@
         <a th:href="@{/v1/mypage}">マイPage</a>
         <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
         <a th:href="@{/v1/event/event_list}">イベント一覧</a>
-        <a th:href="@{/v1/event/new}">イベント作成</a>
         <a th:href="@{/v1/community/new}">コミュニティ作成</a>
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>

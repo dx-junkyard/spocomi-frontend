@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityPage {
+public class Community {
     private Long id;
     private String ownerId;
-    private String location;
+    private Long location;
     private String name;
     private String summaryImageUrl;
     private String summaryMessage;
