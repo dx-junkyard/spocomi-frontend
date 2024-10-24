@@ -35,6 +35,14 @@
 
         <!-- Activity Schedule -->
         <div class="activity-schedule">
+            <h3>最近の動き</h3>
+            <ul th:each="event: ${communityPage.eventScheduleList}">
+                <li th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}">
+                    <button class="invite-button"  onclick="showInviteDialog()">招待</button>
+                </li>
+            </ul>
+        </div>
+        <!--div class="activity-schedule">
             <h3>直近の活動予定</h3>
             <ul>
                 <li>
@@ -46,16 +54,23 @@
                     <button class="invite-button"  onclick="showInviteDialog()">招待</button>
                 </li>
             </ul>
-        </div>
+        </div-->
 
         <!-- Activity History -->
         <div class="activity-history">
+            <h3>活動履歴</h3>
+            <ul th:each="event: ${communityPage.activityHistoryList}">
+                <li th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}">
+                </li>
+            </ul>
+        </div>
+        <!--div class="activity-history">
             <h3>活動履歴</h3>
             <ul>
                 <li>9月30日（日） - 親子サッカー大会</li>
                 <li>9月17日（日） - フットサル交流戦</li>
             </ul>
-        </div>
+        </div-->
 
         <!-- Buttons -->
         <div class="buttons">

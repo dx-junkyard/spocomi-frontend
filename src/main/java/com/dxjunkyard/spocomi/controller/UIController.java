@@ -9,6 +9,7 @@ import com.dxjunkyard.spocomi.domain.resource.response.*;
 import com.dxjunkyard.spocomi.service.EventService;
 import com.dxjunkyard.spocomi.service.TokenService;
 import com.dxjunkyard.spocomi.service.UserService;
+import com.dxjunkyard.spocomi.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,7 @@ public class UIController {
             // 所属コミュニティの直近の活動履歴一覧
             MyPage myPage = communityRestClient.getMyPage(token);
             model.addAttribute(myPage);
+            model.addAttribute(new DateUtils());
             return "spocomi_home";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -122,6 +124,7 @@ public class UIController {
         try {
             MyPage myPage = communityRestClient.getMyPage(token);
             model.addAttribute(myPage);
+            model.addAttribute(new DateUtils());
             return "spocomi_home";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -206,15 +209,16 @@ public class UIController {
             // 該当コミュニティにおけるユーザーのロールを確認
             // 該当コミュニティの情報を取得
             int role = 1;
-            //CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
+            CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
             //Community community = new Community();
             //community.setId(community_id);
 
             // modelに変数を設定
-            //model.addAttribute(communityPage);
+            model.addAttribute(communityPage);
+            model.addAttribute(new DateUtils());
             if (role == 1) {
                 // adminの場合
-                if (community_id == 3L) {
+                if (community_id == 333L) {
                     return "community_admin_sample";
                 }
                 return "community_admin";

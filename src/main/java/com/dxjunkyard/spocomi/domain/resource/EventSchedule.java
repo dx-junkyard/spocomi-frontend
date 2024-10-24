@@ -5,13 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventSchedule {
     private Long eventId;
-    private String date;
+    private LocalDateTime dateTime;
     private String eventName;
-    private Long favNum;
+    private String location;
+    private Long favN;
 }
