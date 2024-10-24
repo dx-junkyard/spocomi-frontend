@@ -34,18 +34,21 @@
         <!-- アクティビティリスト -->
         <div class="activity-list">
             <h3>最近の動き</h3>
-            <ul>
-                <li>西東京ブローガンマスターズ - 11月15日　新規イベント作成</li>
-                <li>ヨガ教室 - 11月10日 新規メンバー参加</li>
-                <li>西東京市ボッチャクラブ - 11月10日 チーム対抗戦</li>
+            <ul th:each="event: ${myPage.upcommingEventList}">
+                <li th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}"></li>
             </ul>
         </div>
 
         <!-- 招待リスト -->
         <div class="invitation-list">
-            <h3>コミュニティへの招待</h3>
-            <ul>
-                <li>
+            <h3>イベントへの招待</h3>
+            <ul th:each="invi: ${myPage.eventInvitationList}">
+                <li th:text="${dateUtils.formatLocalDateTime(invi.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${invi.communityName} + '@' + ${invi.location}">
+                    <button class="invite-button"  onclick="showInviteDialog()">参加</button>
+                </li>
+            </ul>
+            <!--ul>
+                <li >
                     西東京市サッカークラブ
                     <button class="invite-button"  onclick="showInviteDialog()">参加</button>
                 </li>
@@ -53,7 +56,7 @@
                     西東京市お神輿ビギナーズ
                     <button class="invite-button"  onclick="showInviteDialog()">参加</button>
                 </li>
-            </ul>
+            </ul-->
         </div>
 
         <!-- お気に入りコミュニティ -->
