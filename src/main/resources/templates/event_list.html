@@ -20,7 +20,7 @@
 
     <!-- Search Bar -->
     <div class="search-bar">
-        <input type="text" placeholder="サークル名・スポーツ名で検索">
+        <input type="text" placeholder="イベント・スポーツ名で検索">
         <button>検索</button>
     </div>
 
@@ -35,18 +35,17 @@
     </div>
 
     <!-- Community Card -->
-    <div class="community-card-container">
-        <div th:each="communitySummary : ${communitySummaryList}" class="community-card">
+    <div class="event-card-container">
+        <div th:each="event: ${eventList}" class="event-card">
             <div class="image-container">
-                <img th:src="${communitySummary.summaryImageUrl}" th:alt="${communitySummary.name}">
-                <!--img th:src="@{/img/1.png}" th:alt="${communitySummary.name}"-->
+                <img th:src="${event.imagePath}" th:alt="${event.title}">
                 <!-- 下1/3のグラデーションに重ねたテキスト -->
-                <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
+                <div class="overlay-text" th:text="${event.recruitmentMessage}"></div>
                 <!-- 星型マーク -->
                 <span class="favorite-icon" onclick="toggleFavorite(this)">★</span>
             </div>
-            <h2 th:text="${communitySummary.name}"></h2>
-            <p th:text="${communitySummary.summaryMessage}"></p>
+            <h2 th:text="${event.title}"></h2>
+            <p th:text="${event.description}"></p>
             <button>詳しくみる</button>
         </div>
     </div>

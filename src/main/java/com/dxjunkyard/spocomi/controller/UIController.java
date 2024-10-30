@@ -3,6 +3,7 @@ package com.dxjunkyard.spocomi.controller;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
+import com.dxjunkyard.spocomi.api.client.EventRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
 import com.dxjunkyard.spocomi.domain.resource.request.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
@@ -19,12 +20,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -54,6 +52,9 @@ public class UIController {
     @Autowired
     private CommunityRestClient communityRestClient;
 
+    @Autowired
+    private EventRestClient eventRestClient;
+
     @GetMapping("/user/line-login")
     @ResponseBody
     public void linelogin(HttpServletResponse httpServletResponse) {
@@ -82,7 +83,7 @@ public class UIController {
             if (token.isEmpty()) throw new RestClientException("get token by lineId error.");
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
-            return "error"; // error page遷移
+        //    return "error"; // error page遷移
         }
 
 
@@ -133,7 +134,7 @@ public class UIController {
     }
 
     /*
-     * コミュニティ新規作成
+     * コミュニティ新規作成（登録画面の表示）
      */
     @GetMapping("/community/new")
     public String getNewCommunity(
@@ -151,7 +152,7 @@ public class UIController {
     }
 
     /*
-     * コミュニティ新規作成
+     * コミュニティ新規作成（登録結果確認）
      */
     @PostMapping("/community/new")
     public String postNewCommunity(
@@ -196,7 +197,7 @@ public class UIController {
     }
 
     /*
-     *
+     * 各コミュニティのホーム
      */
     @GetMapping("/community/{community_id}/community-home")
     public String communityHome(
@@ -208,25 +209,13 @@ public class UIController {
         try {
             // 該当コミュニティにおけるユーザーのロールを確認
             // 該当コミュニティの情報を取得
-            int role = 1;
+            //int role = 1;
             CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
-            //Community community = new Community();
-            //community.setId(community_id);
 
             // modelに変数を設定
             model.addAttribute(communityPage);
             model.addAttribute(new DateUtils());
-            if (role == 1) {
-                // adminの場合
-                if (community_id == 333L) {
-                    return "community_admin_sample";
-                }
-                return "community_admin";
-            } else if (role == 2) {
-                return "community_member";
-            }else {
-                return "community_visitor";
-            }
+            return "community_admin";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return "error"; // error page遷移
@@ -234,17 +223,19 @@ public class UIController {
     }
 
     /*
-     * イベント新規作成
+     * イベント新規作成（登録画面の表示）
      */
-    @GetMapping("/event/new")
+    @GetMapping("/community/event/new/step2/{community_id}")
     public String getNewEvent(
             @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long community_id,
             Model model) {
         logger.info("new event registration API");
         try {
-            Event newEvent = new Event();
+            EventPage eventPage = new EventPage();
             // modelに変数を設定
-            model.addAttribute(newEvent);
+            eventPage.setCommunityId(community_id);
+            model.addAttribute(eventPage);
             return "event_registration";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -253,7 +244,27 @@ public class UIController {
     }
 
     /*
-     * コミュニティ新規作成
+     * イベント新規作成（登録画面の表示）
+     */
+    @GetMapping("/community/event/new/step1")
+    public String communitySelector(
+            @CookieValue(value="_token", required=false) String token,
+            Model model) {
+        logger.info("new event registration API");
+        try {
+            // token check
+            // modelに変数を設定
+            MyPage myPage = communityRestClient.getMyPage(token);
+            model.addAttribute(myPage);
+            return "community_selector";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
+
+    /*
+     * イベント新規作成（登録実行）
      */
     @PostMapping("/event/new")
     public String postNewEvent(
@@ -266,6 +277,47 @@ public class UIController {
             // modelに変数を設定
            model.addAttribute(regiEvent);
             return "event_registration_confirm";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
+
+    /*
+     *
+     */
+    @GetMapping("/event/event_list")
+    public String event_list(
+            @CookieValue(value="_token", required=false) String token,
+            HttpServletResponse response, Model model) {
+        logger.info("event list API");
+        try {
+            List<Event> eventList = eventRestClient.getEventListApi();
+            model.addAttribute(eventList);
+            return "event_list";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
+    /*
+     * 各イベント情報表示画面
+     */
+    @GetMapping("/event/{event_id}")
+    public String eventPage(
+            @CookieValue(value="_token", required=false) String token,
+            HttpServletResponse response,
+            @PathVariable Long event_id,
+            Model model) {
+        logger.info("eventPage API");
+        try {
+            // 該当コミュニティにおけるユーザーのロールを確認
+            // 該当コミュニティの情報を取得
+            EventPage eventPage = eventRestClient.getEventPage(token, event_id);
+
+            // modelに変数を設定
+            model.addAttribute(eventPage);
+            return "event";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return "error"; // error page遷移

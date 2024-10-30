@@ -125,67 +125,58 @@
 <body>
 
     <div class="form-container">
-        <h1>イベント作成</h1>
-        <form th:action="@{/v1/event/new}" method="post" th:object="${event}">
-            <!-- イベント名 -->
-            <label for="name">イベント名</label>
-            <input type="text" id="name" th:field="*{title}" required>
+        <h1>イベント登録</h1>
+        <form th:action="@{/v1/event/new}" method="post" th:object="${eventPage}">
+            <label for="title">イベント名</label>
+            <input type="text" id="title" th:field="*{title}" required>
 
-            <!-- 開催日時 -->
-            <label for="date">開催日</label>
-            <input type="date" id="date" name="date" th:field="*{eventDate}" required>
+            <label for="eventStart">イベント開始時刻</label>
+            <input type="datetime-local" id="eventStart" th:field="*{eventStart}" required>
 
-            <label for="startTime">開始時間</label>
-            <input type="time" id="startTime" name="startTime" th:field="*{eventStartTime}" required>
+            <label for="eventEnd">イベント終了時刻</label>
+            <input type="datetime-local" id="eventEnd" th:field="*{eventEnd}" required>
 
-            <label for="endTime">終了時間</label>
-            <input type="time" id="endTime" name="endTime" th:field="*{eventEndTime}" required>
+            <label for="applicationStart">募集開始</label>
+            <input type="datetime-local" id="applicationStart" th:field="*{applicationStart}" required>
 
-            <!-- 募集メッセージ -->
-            <label for="recruitmentMessage">PR文</label>
-            <input type="text" id="recruitmentMessage" th:field="*{recruitmentMessage}" required>
+            <label for="applicationEnd">募集終了</label>
+            <input type="datetime-local" id="applicationEnd" th:field="*{applicationEnd}" required>
 
-            <!-- 説明文 -->
-            <label for="description">イベント説明文</label>
+            <label for="recruitmentMessage">募集メッセージ</label>
+            <textarea id="recruitmentMessage" th:field="*{recruitmentMessage}" rows="4" required></textarea>
+
+            <label for="description">イベント説明</label>
             <textarea id="description" th:field="*{description}" rows="4" required></textarea>
 
-            <!-- tags -->
-            <label for="tags">タグ</label>
-            <input type="text" id="tags" name="tags" placeholder="テニス, 鬼ごっこ">
+            <label for="placeId">場所ID</label>
+            <input type="number" id="placeId" th:field="*{placeId}" required>
 
-            <!-- 画像アップロード -->
-            <div class="image-upload">
-                <label>イメージ画像</label>
-
-                <!-- 画像プレビューボックス -->
-                <div class="image-preview" id="imagePreview">
-                    <span>ここに画像が表示されます</span>
-                </div>
-
-                <!-- アップロードボタン -->
-                <label class="upload-btn" for="imageUpload">画像をアップロード</label>
-                <input type="file" id="imageUpload" name="imageUrl" accept="image/*" onchange="previewImage(event)">
-            </div>
-
-            <!-- 公開範囲 -->
             <label for="visibility">公開範囲</label>
             <select id="visibility" th:field="*{visibility}" required>
                 <option value="1">公開</option>
                 <option value="2">地域限定</option>
-                <option value="3">承認制</option>
+                <option value="3">非公開</option>
             </select>
 
-            <!-- Submit button -->
+            <label for="status">ステータス</label>
+            <select id="status" th:field="*{status}" required>
+                <option value="1">予定</option>
+                <option value="2">開催中</option>
+                <option value="3">完了</option>
+            </select>
+
             <button type="submit" class="submit-btn">登録する</button>
         </form>
     </div>
+
 
     <!-- サイドメニュー -->
     <div class="side-menu" id="side-menu">
         <a th:href="@{/v1/mypage}">マイPage</a>
         <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
         <a th:href="@{/v1/event/event_list}">イベント一覧</a>
-        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/event/new/step1}">イベント作成</a>
+        <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -205,7 +196,5 @@
             }
         }
     </script>
-
 </body>
 </html>
-

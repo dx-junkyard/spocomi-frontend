@@ -19,54 +19,24 @@
     </div>
 
     <!-- Main Container -->
-    <div class="container" th:object="${communityPage}" th:attr="data-community-name=${communityPage.name}">
+    <div class="container" th:object="${event}" th:attr="data-community-name=${event.name}">
 
         <!-- Community Photo -->
         <div class="community-photo">
-            <img th:src="${communityPage.summaryImageUrl}" th:alt="${communityPage.name}" onerror="this.style.display='none';">
+            <img th:src="${event.imagePath}" th:alt="${event.name}" onerror="this.style.display='none';">
         </div>
 
         <!-- Community Info -->
         <div class="community-info">
-            <h2 th:text="${communityPage.name}"></h2>
-            <p th:text="${communityPage.description}">サッカー愛好会は、地域の子どもたちから大人まで誰でも楽しめるコミュニティです。毎週日曜に集まり、楽しくサッカーをプレイしています。初心者も大歓迎！体を動かしてリフレッシュしましょう！</p>
-        </div>
-
-        <!-- Activity Schedule -->
-        <div class="activity-schedule">
-            <h3>最近の動き</h3>
-            <ul th:each="event: ${communityPage.eventScheduleList}">
-                <li th:attr="data-interested-count=${event.favN}, data-event-name=${event.eventName}, data-event-date=${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')}">
-                    <span th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}"></span>
-                    <button class="invite-button" onclick="showInviteDialog(this)">招待</button>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Activity History -->
-        <div class="activity-history">
-            <h3>活動履歴</h3>
-            <ul th:each="event: ${communityPage.activityHistoryList}">
-                <li th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}">
-                </li>
-            </ul>
+            <h2 th:text="${event.name}"></h2>
+            <p th:text="${event.description}"></p>
         </div>
 
         <!-- Buttons -->
         <div class="buttons">
-            <button class="event-button" th:attr="data-community-id=${communityPage.id}" onclick="createEvent(this)">イベント作成</button>
-            <button class="message-button">招待リンク</button>
-            <button class="network-button">連携</button>
+            <button class="join-button">参加</button>
         </div>
 
-    </div>
-
-    <div id="inviteModal" class="modal">
-        <div class="modal-content">
-            <p id="modalText">2人がサッカー愛好会に興味を持っています。<br>10月15日のサッカー交流会に招待しますか？</p>
-            <button class="yes-btn" onclick="closeInviteDialog()">はい</button>
-            <button class="no-btn" onclick="closeInviteDialog()">いいえ</button>
-        </div>
     </div>
 
     <!-- Footer -->
@@ -99,12 +69,7 @@
         function closeInviteDialog() {
             document.getElementById('inviteModal').style.display = 'none';
         }
-        function createEvent(element) {
-            const communityId = element.parentNode.getAttribute('data-community-id');
-            window.location.href = `@{/v1/community/{communityId}/event/new(communityId=${communityId})}`; // Thymeleafテンプレートの基本URL
-        }
-        /*
-        document.querySelector('.event-button').addEventListener('click'/, function() {
+        document.querySelector('.event-button').addEventListener('click', function() {
             var communityId = element.parentNode.getAttribute('data-community-id');
             const url = `@{/v1/community/{communityId}/event/new(communityId=${communityId})}`; // Thymeleafテンプレートの基本URL
 
@@ -112,7 +77,6 @@
             //const url = `${baseUrl}?eventId=${eventId}`;
             window.location.href = url;
         });
-         */
     </script>
 </body>
 </html>
