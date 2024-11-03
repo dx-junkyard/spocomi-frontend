@@ -4,6 +4,7 @@ import com.dxjunkyard.spocomi.domain.resource.Community;
 import com.dxjunkyard.spocomi.domain.resource.CommunitySummary;
 import com.dxjunkyard.spocomi.domain.resource.Event;
 import com.dxjunkyard.spocomi.domain.resource.request.AddEventRequest;
+import com.dxjunkyard.spocomi.domain.resource.response.EventPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,41 +44,42 @@ public class EventRestClient {
         }
     }
 
-    public Event getEventInfo(String token, String event_id) {
+    public EventPage getEventPage(String token, Long event_id) {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            String url = backend_api_url + "/v1/api/events/" + event_id;
+            String url = backend_api_url + "/v1/api/events/" + event_id.toString();
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<Event> response = restTemplate.exchange(
+            ResponseEntity<EventPage> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     entity,
-                    Event.class);
+                    EventPage.class);
             return response.getBody();
 
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
-            return new Event();
+            return new EventPage();
         }
     }
 
-    public Event postEventRegistration(String token, AddEventRequest event) {
+    public EventPage postEventRegistration(String token, EventPage event) {
         try {
             String url = backend_api_url + "/v1/api/events/event/new";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add("Authorization", "Bearer " + token);
-            HttpEntity<AddEventRequest> requestEntity = new HttpEntity<>(event,headers);
+            //HttpEntity<AddEventRequest> requestEntity = new HttpEntity<>(event,headers);
+            HttpEntity<EventPage> requestEntity = new HttpEntity<>(event,headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<Event> response = restTemplate
-                    .exchange(url , HttpMethod.POST, requestEntity, Event.class);
+            ResponseEntity<EventPage> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, EventPage.class);
             return response.getBody();
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
-            return new Event();
+            return new EventPage();
         }
     }
 

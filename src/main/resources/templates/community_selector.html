@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
+    <title>イベント作成</title>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>スポコミ</h1>
+        <div class="hamburger-menu" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- コミュニティ選択 -->
+        <div class="community-select-area">
+            <select name="community-select" id="community-select">
+                <option value="">コミュニティを選択</option>
+                <option th:each="community : ${myPage.communitySelectorList}"
+                        th:value="${community.communityId}"
+                        th:text="${community.communityName}">
+                </option>
+            </select>
+            <a id="community-home-link" href="#"><button type="button" onclick="navigateToEventRegistration()">決定</button></a>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div class="footer">
+        ©spocomi
+    </div>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu" id="side-menu">
+        <a th:href="@{/v1/mypage}">マイPage</a>
+        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+        <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script>
+        function navigateToEventRegistration() {
+            var selectedCommunityId = document.getElementById('community-select').value;
+            if (selectedCommunityId) {
+                // Replace the URL with the selected community ID
+                var link = document.getElementById('community-home-link');
+                link.href = '/v1/community/event/new/step2/' + selectedCommunityId;
+                link.click(); // Simulate a click on the link
+            } else {
+                alert('コミュニティを選択してください');
+            }
+        }
+    </script>
+</body>
+</html>
+

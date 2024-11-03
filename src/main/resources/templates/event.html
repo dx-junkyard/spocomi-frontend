@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コミュニティ連携</title>
+    <title>イベント紹介ページ</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
 </head>
 <body>
+
     <!-- Header -->
     <div class="header">
         <h1>スポコミ</h1>
@@ -17,27 +18,27 @@
         </div>
     </div>
 
-    <div class="container">
-        <h1>コミュニティ連携</h1>
+    <!-- Main Container -->
+    <div class="container" th:object="${eventPage}" th:attr="data-community-name=${eventPage.title}">
 
-        <div class="group-creation">
-            <button id="create-group-btn" disabled>結成</button>
+        <!-- Community Info-->
+        <div class="community-info">
+            <h2 th:text="${eventPage.title}"></h2>
+            <p th:text="${eventPage.description}"></p>
         </div>
 
-        <div id="community-container">
-            <div class="community-row">
-                <input type="text" class="community-id-input" placeholder="コミュニティIDを入力">
-                <div class="community-name">- コミュニティ名 -</div>
-                <button class="search-btn" onclick="searchCommunity(this)">検索</button>
-                <button class="delete-btn" onclick="deleteCommunity(this)">削除</button>
-            </div>
+        <!-- Community Info-->
+        <div class="buttons">
+            <button class="join-button">参加</button>
         </div>
+
     </div>
 
     <!-- Footer -->
     <div class="footer">
         ©spocomi
     </div>
+
     <!-- サイドメニュー -->
     <div class="side-menu" id="side-menu">
         <a th:href="@{/v1/mypage}">マイPage</a>
@@ -49,7 +50,6 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:src="@{/js/spocomi_menu.js}"></script>
-    <script th:src="@{/js/spocomi_networking.js}"></script>
 </body>
 </html>
 

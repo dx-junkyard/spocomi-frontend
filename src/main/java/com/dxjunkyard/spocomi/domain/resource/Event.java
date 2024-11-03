@@ -20,7 +20,8 @@ public class Event {
     private String title;
     private Long communityId;
     private String ownerId;
-    private LocalDate eventDate;
+    private String imagePath;
+    private LocalDate eventDate;  // イベント実施日付
     private LocalTime eventStartTime;
     private LocalTime eventEndTime;
     private LocalDateTime applicationStart;
