@@ -306,7 +306,7 @@ public class UIController {
     /*
      * 各イベント情報表示画面
      */
-    @GetMapping("/event/{event_id}")
+    @GetMapping("/event/{event_id}/display")
     public String eventPage(
             @CookieValue(value="_token", required=false) String token,
             HttpServletResponse response,

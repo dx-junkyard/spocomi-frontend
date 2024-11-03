@@ -48,7 +48,7 @@ public class EventRestClient {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            String url = backend_api_url + "/v1/api/events/" + event_id.toString();
+            String url = backend_api_url + "/v1/api/events/event/" + event_id.toString() + "/display";
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
