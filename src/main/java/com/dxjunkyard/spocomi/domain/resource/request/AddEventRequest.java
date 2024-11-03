@@ -14,6 +14,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddEventRequest {
+    private Long id;
+
     private Long communityId;
 
     @NotBlank(message = "Title cannot be empty")

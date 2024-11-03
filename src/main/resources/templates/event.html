@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コミュニティ紹介ページ</title>
+    <title>イベント紹介ページ</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
 </head>
 <body>
@@ -19,20 +19,15 @@
     </div>
 
     <!-- Main Container -->
-    <div class="container" th:object="${event}" th:attr="data-community-name=${event.name}">
+    <div class="container" th:object="${eventPage}" th:attr="data-community-name=${eventPage.title}">
 
-        <!-- Community Photo -->
-        <div class="community-photo">
-            <img th:src="${event.imagePath}" th:alt="${event.name}" onerror="this.style.display='none';">
-        </div>
-
-        <!-- Community Info -->
+        <!-- Community Info-->
         <div class="community-info">
-            <h2 th:text="${event.name}"></h2>
-            <p th:text="${event.description}"></p>
+            <h2 th:text="${eventPage.title}"></h2>
+            <p th:text="${eventPage.description}"></p>
         </div>
 
-        <!-- Buttons -->
+        <!-- Community Info-->
         <div class="buttons">
             <button class="join-button">参加</button>
         </div>
@@ -55,29 +50,6 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:src="@{/js/spocomi_menu.js}"></script>
-    <script>
-        function showInviteDialog(element) {
-            var communityName = document.querySelector('.container').getAttribute('data-community-name');
-            var eventName = element.parentNode.getAttribute('data-event-name');
-            var eventDate = element.parentNode.getAttribute('data-event-date');
-            var favN = element.parentNode.getAttribute('data-interested-count');
-            document.getElementById('modalText').innerHTML = `${favN}人が${communityName}に興味を持っています。<br>${eventDate}の${eventName}に招待しますか？`;
-            document.getElementById('inviteModal').style.display = 'flex';
-        }
-
-        // Function to close the invite dialog
-        function closeInviteDialog() {
-            document.getElementById('inviteModal').style.display = 'none';
-        }
-        document.querySelector('.event-button').addEventListener('click', function() {
-            var communityId = element.parentNode.getAttribute('data-community-id');
-            const url = `@{/v1/community/{communityId}/event/new(communityId=${communityId})}`; // Thymeleafテンプレートの基本URL
-
-            // URLにクエリパラメータとしてeventIdを追加
-            //const url = `${baseUrl}?eventId=${eventId}`;
-            window.location.href = url;
-        });
-    </script>
 </body>
 </html>
 

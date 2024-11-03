@@ -269,16 +269,19 @@ public class UIController {
     @PostMapping("/event/new")
     public String postNewEvent(
             @CookieValue(value="_token", required=false) String token,
-            Event event,
+            EventPage ePage,
             Model model) {
         logger.info("new event registration API");
         try {
-            AddEventRequest regiEvent = eventService.addEvent(token,event);
+            EventPage eventPage = eventService.addEvent(token,ePage);
             // modelに変数を設定
-           model.addAttribute(regiEvent);
-            return "event_registration_confirm";
+            model.addAttribute(eventPage);
+            return "event";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        } catch (Exception e) {
+            logger.info("error : {}", e.toString());
             return "error"; // error page遷移
         }
     }

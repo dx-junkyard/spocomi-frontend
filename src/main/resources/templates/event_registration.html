@@ -126,9 +126,11 @@
 
     <div class="form-container">
         <h1>イベント登録</h1>
-        <form th:action="@{/v1/event/new}" method="post" th:object="${eventPage}">
+        <form th:action="@{/v1/event/new}" method="post" th:object="${eventPage}" id="eventForm">
             <label for="title">イベント名</label>
             <input type="text" id="title" th:field="*{title}" required>
+
+            <input type="hidden" id="communityId" th:field="*{communityId}" />
 
             <label for="eventStart">イベント開始時刻</label>
             <input type="datetime-local" id="eventStart" th:field="*{eventStart}" required>

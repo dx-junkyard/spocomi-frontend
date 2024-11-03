@@ -65,20 +65,21 @@ public class EventRestClient {
         }
     }
 
-    public Event postEventRegistration(String token, AddEventRequest event) {
+    public EventPage postEventRegistration(String token, EventPage event) {
         try {
             String url = backend_api_url + "/v1/api/events/event/new";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add("Authorization", "Bearer " + token);
-            HttpEntity<AddEventRequest> requestEntity = new HttpEntity<>(event,headers);
+            //HttpEntity<AddEventRequest> requestEntity = new HttpEntity<>(event,headers);
+            HttpEntity<EventPage> requestEntity = new HttpEntity<>(event,headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<Event> response = restTemplate
-                    .exchange(url , HttpMethod.POST, requestEntity, Event.class);
+            ResponseEntity<EventPage> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, EventPage.class);
             return response.getBody();
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
-            return new Event();
+            return new EventPage();
         }
     }
 
