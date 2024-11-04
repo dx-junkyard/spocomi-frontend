@@ -295,8 +295,8 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("event list API");
         try {
-            List<Event> eventList = eventRestClient.getEventListApi();
-            model.addAttribute(eventList);
+            List<EventPage> eventList = eventRestClient.getEventListApi();
+            model.addAttribute("eventList",eventList);
             return "event_list";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());

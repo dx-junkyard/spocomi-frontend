@@ -20,8 +20,8 @@
     <!-- Main Container -->
     <div class="container" th:object="${eventPage}" th:attr="data-community-name=${eventPage.title}">
 
-        <!-- Community Info -->
-        <div class="community-info">
+        <!-- event Info -->
+        <div class="event-info">
             <h2 th:text="${eventPage.title}"></h2>
             <p th:text="${eventPage.description}"></p>
 
@@ -77,8 +77,9 @@
     </script>
     <script>
         // disclosureRangeの値を取得して表示する（サーバーから値を取得する場合は必要に応じて調整）
+        const displayElement = document.getElementById("visibilityDisplay");
         const visibilityValue = [[${eventPage.visibility}]];
-        displayVisibility(visibilityValue, "visibilityDisplay");
+        displayElement.textContent = displayVisibility(visibilityValue);
     </script>
 </body>
 </html>

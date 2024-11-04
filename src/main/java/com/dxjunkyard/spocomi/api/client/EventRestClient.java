@@ -23,19 +23,19 @@ public class EventRestClient {
     @Value("${backend-api.url}")
     private String backend_api_url;
 
-    public List<Event> getEventListApi() {
+    public List<EventPage> getEventListApi() {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
             String url = backend_api_url + "/v1/api/events/eventlist";
-            ResponseEntity<List<Event>> response = restTemplate.exchange(
+            ResponseEntity<List<EventPage>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<Event>>() {
+                    new ParameterizedTypeReference<List<EventPage>>() {
                     }
             );
-            List<Event> summaryList = response.getBody();
+            List<EventPage> summaryList = response.getBody();
             return summaryList;
 
         } catch (RestClientException e) {

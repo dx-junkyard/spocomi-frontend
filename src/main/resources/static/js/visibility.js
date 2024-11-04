@@ -1,8 +1,9 @@
 // visibilityOptions.js
 const visibilityOptions = {
     1: "公開",
-    2: "地域限定",
-    3: "非公開"
+    2: "非公開",
+    3: "地域限定",
+    4: "掲載場所指定"
 };
 
 // 選択肢を作成する関数
@@ -19,7 +20,13 @@ function createVisibilityOptions(selectElementId) {
 }
 
 // Visibility情報を表示する関数
+function displayVisibility(visibilityValue) {
+    return visibilityOptions[visibilityValue] || "不明";
+}
+
+/*
 function displayVisibility(visibilityValue, displayElementId) {
     const displayElement = document.getElementById(displayElementId);
     displayElement.textContent = visibilityOptions[visibilityValue] || "不明";
 }
+*/
