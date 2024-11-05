@@ -19,10 +19,12 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="search-bar">
-        <input type="text" placeholder="イベント・スポーツ名で検索">
-        <button>検索</button>
-    </div>
+    <form action="/v1/event/keyword-search" method="GET">
+        <div class="search-bar">
+            <input type="text" name="keyword" placeholder="イベント・スポーツ名で検索">
+            <button type="submit">検索</button>
+        </div>
+    </form>
 
     <!-- Tag Filters -->
     <div class="tags">
@@ -35,18 +37,35 @@
     </div>
 
     <!-- Community Card -->
-    <div class="event-card-container">
-        <div th:each="event: ${eventList}" class="event-card">
-            <div class="image-container">
-                <img th:src="${event.imagePath}" th:alt="${event.title}">
-                <!-- 下1/3のグラデーションに重ねたテキスト -->
-                <div class="overlay-text" th:text="${event.recruitmentMessage}"></div>
-                <!-- 星型マーク -->
-                <span class="favorite-icon" onclick="toggleFavorite(this)">★</span>
+    <div class="event-card-container" th:object="${eventList}">
+        <div th:each="eventPage: ${eventList}" class="event-card">
+            <!-- Community Info -->
+            <div class="event-info">
+                <h2 th:text="${eventPage.title}"></h2>
+                <p th:text="${eventPage.description}"></p>
+                <!-- Event Details -->
+                <div class="event-details"
+                     th:data-event-start="${eventPage.eventStart}"
+                     th:data-event-end="${eventPage.eventEnd}"
+                     th:data-application-start="${eventPage.applicationStart}"
+                     th:data-application-end="${eventPage.applicationEnd}"
+                     th:data-visibility="${eventPage.visibility}">
+                    <!-- イベント期間 -->
+                    <p><strong>イベント期間:</strong>
+                        <span class="eventPeriod"></span>
+                    </p>
+                    <!-- 募集期間 -->
+                    <p><strong>募集期間:</strong>
+                        <span class="applicationPeriod"></span>
+                    </p>
+                    <p><strong>開示範囲:</strong> <span class="visibilityDisplay"></span></p>
+                </div>
             </div>
-            <h2 th:text="${event.title}"></h2>
-            <p th:text="${event.description}"></p>
-            <button>詳しくみる</button>
+
+            <!-- Join Button -->
+            <div class="buttons">
+                <button class="join-button">参加</button>
+            </div>
         </div>
     </div>
 
@@ -65,13 +84,33 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script th:src="@{/js/visibility.js}"></script>
+    <script th:src="@{/js/date_formatter.js}"></script>
     <script>
+        const eventDetailsElements = document.querySelectorAll('.event-details');
+        eventDetailsElements.forEach((element) => {
+            // datasetを使ってカスタム属性を取得
+            const eventStart = element.dataset.eventStart;
+            const eventEnd = element.dataset.eventEnd;
+            const applicationStart = element.dataset.applicationStart;
+            const applicationEnd = element.dataset.applicationEnd;
+            const visibility = element.dataset.visibility;
+
+            // 必要に応じて値を処理またはフォーマット
+            const formattedEventPeriod = formatEventDateRange(eventStart, eventEnd);
+            const formattedApplicationPeriod = formatEventDateRange(applicationStart, applicationEnd);
+            const formattedVisibility = displayVisibility(visibility);
+
+            // 処理した値をHTMLの子要素に表示
+            element.querySelector('.eventPeriod').textContent = formattedEventPeriod;
+            element.querySelector('.applicationPeriod').textContent = formattedApplicationPeriod;
+            element.querySelector('.visibilityDisplay').textContent = formattedVisibility;
+        });
         // お気に入りの星型アイコンをクリックすると黄色に変更
         function toggleFavorite(element) {
             element.classList.toggle('active');
         }
     </script>
-
 </body>
 </html>
 

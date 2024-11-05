@@ -1,11 +1,8 @@
 package com.dxjunkyard.spocomi.controller;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
-import com.dxjunkyard.spocomi.domain.resource.request.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
 import com.dxjunkyard.spocomi.service.EventService;
 import com.dxjunkyard.spocomi.service.TokenService;
@@ -15,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -182,12 +178,22 @@ public class UIController {
         logger.info("community list API");
         try {
             List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityListApi();
-            /*
-            for(CommunitySummary communitySummary : communitySummaryList) {
-                //communitySummary.setSummaryImageUrl("http://localhost:8081/v1/api/communities/images/1.jpg");
-                communitySummary.setSummaryImageUrl("/img/1.png");
-            }
-             */
+            model.addAttribute(communitySummaryList);
+            return "community_list";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
+
+    @GetMapping("/community/keyword-search")
+    public String community_keyword_search(
+            @CookieValue(value="_token", required=false) String token,
+            @RequestParam(value = "keyword", required = true) String keyword, // keywordパラメータを追加
+            HttpServletResponse response, Model model) {
+        logger.info("community keyword-search API");
+        try {
+            List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityKeywordSearchApi(keyword);
             model.addAttribute(communitySummaryList);
             return "community_list";
         } catch (RestClientException e) {
@@ -295,8 +301,8 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("event list API");
         try {
-            List<Event> eventList = eventRestClient.getEventListApi();
-            model.addAttribute(eventList);
+            List<EventPage> eventList = eventRestClient.getEventListApi();
+            model.addAttribute("eventList",eventList);
             return "event_list";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -306,7 +312,7 @@ public class UIController {
     /*
      * 各イベント情報表示画面
      */
-    @GetMapping("/event/{event_id}")
+    @GetMapping("/event/{event_id}/display")
     public String eventPage(
             @CookieValue(value="_token", required=false) String token,
             HttpServletResponse response,
@@ -327,6 +333,22 @@ public class UIController {
         }
     }
 
+
+    @GetMapping("/event/keyword-search")
+    public String event_keyword_search(
+            @CookieValue(value="_token", required=false) String token,
+            @RequestParam(value = "keyword", required = true) String keyword, // keywordパラメータを追加
+            HttpServletResponse response, Model model) {
+        logger.info("community keyword-search API");
+        try {
+            List<EventPage> eventList = eventRestClient.searchEventByKeywordApi(keyword);
+            model.addAttribute("eventList",eventList);
+            return "event_list";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
     /*
      * イベント新規作成
      */

@@ -17,21 +17,33 @@
             <div></div>
         </div>
     </div>
-
     <!-- Main Container -->
     <div class="container" th:object="${eventPage}" th:attr="data-community-name=${eventPage.title}">
 
-        <!-- Community Info-->
-        <div class="community-info">
+        <!-- event Info -->
+        <div class="event-info">
             <h2 th:text="${eventPage.title}"></h2>
             <p th:text="${eventPage.description}"></p>
+
+            <!-- New Event Details -->
+            <div class="event-details">
+                <!-- イベント期間 -->
+                <p><strong>イベント期間:</strong>
+                    <span id="eventPeriod"></span>
+                </p>
+
+                <!-- 募集期間 -->
+                <p><strong>募集期間:</strong>
+                    <span id="applicationPeriod"></span>
+                </p>
+                <p><strong>開示範囲:</strong> <span id="visibilityDisplay"></span></p>
+            </div>
         </div>
 
-        <!-- Community Info-->
+        <!-- Join Button -->
         <div class="buttons">
             <button class="join-button">参加</button>
         </div>
-
     </div>
 
     <!-- Footer -->
@@ -50,6 +62,25 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script th:src="@{/js/visibility.js}"></script>
+    <script th:src="@{/js/date_formatter.js}"></script>
+    <script>
+        // Thymeleafでサーバーサイドから日付を埋め込む
+        const eventStart = "[[${eventPage.eventStart}]]";
+        const eventEnd = "[[${eventPage.eventEnd}]]";
+        const applicationStart = "[[${eventPage.applicationStart}]]";
+        const applicationEnd = "[[${eventPage.applicationEnd}]]";
+
+        // 日付をフォーマットして表示する
+        document.getElementById("eventPeriod").textContent = formatEventDateRange(eventStart, eventEnd);
+        document.getElementById("applicationPeriod").textContent = formatEventDateRange(applicationStart, applicationEnd);
+    </script>
+    <script>
+        // disclosureRangeの値を取得して表示する（サーバーから値を取得する場合は必要に応じて調整）
+        const displayElement = document.getElementById("visibilityDisplay");
+        const visibilityValue = [[${eventPage.visibility}]];
+        displayElement.textContent = displayVisibility(visibilityValue);
+    </script>
 </body>
 </html>
 

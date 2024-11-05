@@ -1,19 +1,14 @@
 package com.dxjunkyard.spocomi.api.client;
 
-import com.dxjunkyard.spocomi.domain.resource.CommunitySummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UserRestClient {
