@@ -19,10 +19,12 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="search-bar">
-        <input type="text" placeholder="イベント・スポーツ名で検索">
-        <button>検索</button>
-    </div>
+    <form action="/v1/event/keyword-search" method="GET">
+        <div class="search-bar">
+            <input type="text" name="keyword" placeholder="イベント・スポーツ名で検索">
+            <button type="submit">検索</button>
+        </div>
+    </form>
 
     <!-- Tag Filters -->
     <div class="tags">

@@ -13,6 +13,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,32 @@ public class EventRestClient {
     @Value("${backend-api.url}")
     private String backend_api_url;
 
+    public List<EventPage> searchEventByKeywordApi(String keyword) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8.name());
+            String urlTemplate = UriComponentsBuilder.fromHttpUrl(backend_api_url + "/v1/api/events/keyword-search")
+                    .queryParam("keyword", decodedKeyword)
+                    .toUriString();
+            ResponseEntity<List<EventPage>> response = restTemplate.exchange(
+                    urlTemplate,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<EventPage>>() {
+                    }
+            );
+            List<EventPage> eventList = response.getBody();
+            return eventList;
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return new ArrayList<>();
+        } catch (Exception e) {
+            logger.info("error : {}", e.toString());
+            return new ArrayList<>();
+        }
+    }
     public List<EventPage> getEventListApi() {
         RestTemplate restTemplate = new RestTemplate();
 
