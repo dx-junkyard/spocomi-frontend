@@ -2,6 +2,7 @@ package com.dxjunkyard.spocomi.api.client;
 
 import com.dxjunkyard.spocomi.domain.resource.Community;
 import com.dxjunkyard.spocomi.domain.resource.CommunitySummary;
+import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityPage;
 import com.dxjunkyard.spocomi.domain.resource.response.MyPage;
 import org.slf4j.Logger;
@@ -131,4 +132,27 @@ public class CommunityRestClient {
             return new MyPage();
         }
     }
+
+    public Integer updateFavoriteStatus(String token, FavoriteRequest request) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/favorite";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<FavoriteRequest> entity = new HttpEntity<>(request, headers);
+            ResponseEntity<Integer> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    Integer.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return 0;
+        }
+    }
+
+    //.updateFavoriteStatus(token, communityId, status);
 }

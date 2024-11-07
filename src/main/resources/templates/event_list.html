@@ -64,7 +64,8 @@
 
             <!-- Join Button -->
             <div class="buttons">
-                <button class="join-button">参加</button>
+                <button class="join-button" th:onclick="'joinEvent(' + ${eventPage.id} +')'">参加</button>
+                <!--button class="join-button">参加</button-->
             </div>
         </div>
     </div>

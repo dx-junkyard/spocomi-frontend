@@ -101,7 +101,6 @@ public class EventRestClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add("Authorization", "Bearer " + token);
-            //HttpEntity<AddEventRequest> requestEntity = new HttpEntity<>(event,headers);
             HttpEntity<EventPage> requestEntity = new HttpEntity<>(event,headers);
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<EventPage> response = restTemplate

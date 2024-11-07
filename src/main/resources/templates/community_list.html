@@ -41,15 +41,14 @@
         <div th:each="communitySummary : ${communitySummaryList}" class="community-card">
             <div class="image-container">
                 <img th:src="${communitySummary.summaryImageUrl}" th:alt="${communitySummary.name}">
-                <!--img th:src="@{/img/1.png}" th:alt="${communitySummary.name}"-->
                 <!-- 下1/3のグラデーションに重ねたテキスト -->
                 <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
                 <!-- 星型マーク -->
-                <span class="favorite-icon" onclick="toggleFavorite(this)">★</span>
+                <span class="favorite-icon" onclick="toggleFavorite(this)" th:attr="data-community-id=${communitySummary.id}">★</span>
             </div>
             <h2 th:text="${communitySummary.name}"></h2>
             <p th:text="${communitySummary.summaryMessage}"></p>
-            <button>詳しくみる</button>
+            <button th:onclick="'navigateToCommunityHome(' + ${communitySummary.id} +')'">詳しくみる</button>
         </div>
     </div>
 
@@ -71,7 +70,45 @@
     <script>
         // お気に入りの星型アイコンをクリックすると黄色に変更
         function toggleFavorite(element) {
-            element.classList.toggle('active');
+            // 現在の状態を取得
+            const isActive = element.classList.contains('active');
+            // コミュニティIDを取得する（data-community-id属性を使う）
+            const communityId = element.dataset.communityId;
+
+            // サーバーに非同期リクエストを送信
+            fetch('/v1/api/community/favorite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    communityId: communityId,
+                    status: isActive ? 0 : 1 // 現在の状態に基づいて反転させる
+                }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('お気に入り状態の更新に失敗しました');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data === 1) {
+                        element.classList.add('active');
+                        console.log('add active');
+                    } else if (data === 0) {
+                        element.classList.remove('active');
+                        console.log('remove active');
+                    }
+                    console.log('お気に入り状態が正常に更新されました:', data);
+                })
+                .catch(error => {
+                    console.error('エラー:', error);
+                });
+        }
+
+        function navigateToCommunityHome(communityId) {
+            window.location.href = '/v1/community/' + communityId + '/community-home';
         }
     </script>
 </body>
