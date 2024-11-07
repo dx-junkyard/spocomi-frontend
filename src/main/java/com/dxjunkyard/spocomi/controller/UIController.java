@@ -1,5 +1,6 @@
 package com.dxjunkyard.spocomi.controller;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
