@@ -1,11 +1,10 @@
 package com.dxjunkyard.spocomi.api.client;
 
+import com.dxjunkyard.spocomi.domain.resource.response.MyPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -37,5 +36,25 @@ public class UserRestClient {
         }
     }
 
+    public String getUserIdByToken(String token) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/users/get-userid";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "";
+        }
+    }
 
 }
