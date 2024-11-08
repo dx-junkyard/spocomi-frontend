@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
@@ -112,6 +115,24 @@ public class CommunityRestClient {
        }
     }
 
+    public Community updateCommunity(String token, Community community) {
+        try {
+            String url = backend_api_url + "/v1/api/communities/community/update";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<Community> requestEntity = new HttpEntity<>(community,headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Community> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, Community.class);
+            return response.getBody();
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return new Community();
+        }
+    }
+
+
     public MyPage getMyPage(String token) {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -154,5 +175,30 @@ public class CommunityRestClient {
         }
     }
 
-    //.updateFavoriteStatus(token, communityId, status);
+    public String uploadPhoto(String token, MultipartFile multipartFile) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/community/upload-image";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            // MultiValueMapにファイルを追加
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("photo", multipartFile.getResource());
+
+            // リクエストエンティティ作成
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class);
+
+            String photoPath = backend_api_url + "/uploads/" + response.getBody();
+            return photoPath;
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "";
+        }
+    }
 }

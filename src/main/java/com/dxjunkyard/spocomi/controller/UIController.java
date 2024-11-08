@@ -5,6 +5,7 @@ import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
+import com.dxjunkyard.spocomi.service.CommunityService;
 import com.dxjunkyard.spocomi.service.EventService;
 import com.dxjunkyard.spocomi.service.TokenService;
 import com.dxjunkyard.spocomi.service.UserService;
@@ -51,6 +52,9 @@ public class UIController {
 
     @Autowired
     private EventRestClient eventRestClient;
+
+    @Autowired
+    private CommunityService communityService;
 
     @GetMapping("/user/line-login")
     @ResponseBody
@@ -159,6 +163,9 @@ public class UIController {
         logger.info("new community registration API");
         try {
             Community regiCommunity = communityRestClient.postCommunityRegistration(token,community);
+            String newPhotoName = communityService.renamePhoto(regiCommunity.getOwnerId(),regiCommunity.getId());
+            regiCommunity.setSummaryImageUrl(newPhotoName);
+            communityRestClient.updateCommunity(token, regiCommunity);
             // modelに変数を設定
             model.addAttribute(regiCommunity);
             return "community_registration_confirm";

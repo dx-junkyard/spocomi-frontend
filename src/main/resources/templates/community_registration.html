@@ -126,7 +126,7 @@
 
     <div class="form-container">
         <h1>コミュニティ登録</h1>
-        <form th:action="@{/v1/community/new}" method="post" th:object="${community}">
+        <form th:action="@{/v1/community/new}" method="post" th:object="${community}"  enctype="multipart/form-data">
             <!-- コミュニティ名 -->
             <label for="name">コミュニティ名</label>
             <input type="text" id="name" th:field="*{name}" required>
@@ -203,6 +203,28 @@
                 reader.readAsDataURL(file);
             }
         }
+
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('imageUrl', file);
+
+                fetch('/v1/api/community/upload-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        // 画像アップロード後の処理
+                        const imagePreview = document.getElementById('imagePreview');
+                        imagePreview.innerHTML = `<img src="${data}" alt="Uploaded Image">`;
+                    })
+                    .catch(error => {
+                        console.error('Error uploading image:', error);
+                    });
+            }
+        });
     </script>
 
 </body>
