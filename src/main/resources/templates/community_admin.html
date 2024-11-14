@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>コミュニティ紹介ページ</title>
-    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
+    <style th:utext="${inlineCss}"></style>
 </head>
 <body>
 
@@ -54,7 +54,12 @@
 
         <!-- Buttons -->
         <div class="buttons">
-            <button class="event-button" th:attr="data-community-id=${communityPage.id}" onclick="createEvent(this)">イベント作成</button>
+            <!--button class="event-button" th:attr="data-community-id=${communityPage.id}" onclick="createEvent(this)">イベント作成</button-->
+            <button class="event-button" th:attr="data-community-id=${communityPage.id}"
+                    th:data-url="@{/v1/community/event/new/step2/{communityId}(communityId=${communityPage.id})}"
+                    onclick="createCommunityEvent(this)">
+                イベント作成
+            </button>
             <button class="message-button">招待リンク</button>
             <button class="network-button">連携</button>
         </div>
@@ -84,7 +89,7 @@
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script th:utext="${inlineJs}"></script>
     <script>
         function showInviteDialog(element) {
             var communityName = document.querySelector('.container').getAttribute('data-community-name');
@@ -99,10 +104,16 @@
         function closeInviteDialog() {
             document.getElementById('inviteModal').style.display = 'none';
         }
+        function createCommunityEvent(element) {
+            const url = element.getAttribute('data-url');
+            window.location.href = url;
+        }
+        /*
         function createEvent(element) {
             const communityId = element.parentNode.getAttribute('data-community-id');
             window.location.href = `@{/v1/community/{communityId}/event/new(communityId=${communityId})}`; // Thymeleafテンプレートの基本URL
         }
+         */
         /*
         document.querySelector('.event-button').addEventListener('click'/, function() {
             var communityId = element.parentNode.getAttribute('data-community-id');

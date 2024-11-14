@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>コミュニティ連携</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
+    <style th:utext="${inlineCss}"></style>
 </head>
 <body>
     <!-- Header -->
@@ -48,6 +49,7 @@
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <script th:utext="${inlineJs}"></script>
     <script th:src="@{/js/spocomi_menu.js}"></script>
     <script th:src="@{/js/spocomi_networking.js}"></script>
 </body>

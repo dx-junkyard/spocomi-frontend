@@ -30,7 +30,7 @@ public class CommunityRestClient {
     @Value("${backend-api.url}")
     private String backend_api_url;
 
-    public List<CommunitySummary> getCommunityKeywordSearchApi(String keyword) {
+    public List<CommunitySummary> getCommunityKeywordSearchApi(String token, String keyword) {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
@@ -38,10 +38,13 @@ public class CommunityRestClient {
             String urlTemplate = UriComponentsBuilder.fromHttpUrl(backend_api_url + "/v1/api/communities/keyword-search")
                     .queryParam("keyword", decodedKeyword)
                     .toUriString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<List<CommunitySummary>> response = restTemplate.exchange(
                     urlTemplate,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<CommunitySummary>>() {
                     }
             );
@@ -56,15 +59,18 @@ public class CommunityRestClient {
             return new ArrayList<>();
         }
     }
-    public List<CommunitySummary> getCommunityListApi() {
+    public List<CommunitySummary> getCommunityListApi(String token) {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
             String url = backend_api_url + "/v1/api/communities/communitylist";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<List<CommunitySummary>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<CommunitySummary>>() {
                     }
             );
