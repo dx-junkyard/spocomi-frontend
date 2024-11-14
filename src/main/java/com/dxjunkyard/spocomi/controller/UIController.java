@@ -16,12 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @Controller
@@ -65,6 +71,24 @@ public class UIController {
         httpServletResponse.setStatus(302);
     }
 
+    private static String combineResources(List<String> resourcePaths) {
+        return resourcePaths.stream()
+                .map(path -> {
+                    try {
+                        ClassPathResource resource = new ClassPathResource(path);
+                        try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+                            return FileCopyUtils.copyToString(reader);
+                        }
+                    } catch (IOException e) {
+                        // エラー処理（ここでは空文字を返す）
+                        return "";
+                    }
+                })
+                .collect(Collectors.joining("\n"));  // 各リソースを改行で区切って結合
+    }
+
+
+
     /**
      * LINE Auth
      */
@@ -107,6 +131,15 @@ public class UIController {
             MyPage myPage = communityRestClient.getMyPage(token);
             model.addAttribute(myPage);
             model.addAttribute(new DateUtils());
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "spocomi_home";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -127,9 +160,23 @@ public class UIController {
             MyPage myPage = communityRestClient.getMyPage(token);
             model.addAttribute(myPage);
             model.addAttribute(new DateUtils());
+
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+
             return "spocomi_home";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        } catch (Exception e) {
+            logger.info("error : {}", e.toString());
             return "error"; // error page遷移
         }
     }
@@ -145,6 +192,15 @@ public class UIController {
         try {
             Community newCommunity = new Community();
             model.addAttribute(newCommunity);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_registration";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -168,6 +224,15 @@ public class UIController {
             communityRestClient.updateCommunity(token, regiCommunity);
             // modelに変数を設定
             model.addAttribute(regiCommunity);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_registration_confirm";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -185,8 +250,17 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("community list API");
         try {
-            List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityListApi();
+            List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityListApi(token);
             model.addAttribute(communitySummaryList);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_list";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -201,8 +275,17 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("community keyword-search API");
         try {
-            List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityKeywordSearchApi(keyword);
+            List<CommunitySummary> communitySummaryList = communityRestClient.getCommunityKeywordSearchApi(token, keyword);
             model.addAttribute(communitySummaryList);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_list";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -229,6 +312,15 @@ public class UIController {
             // modelに変数を設定
             model.addAttribute(communityPage);
             model.addAttribute(new DateUtils());
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_admin";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -250,6 +342,15 @@ public class UIController {
             // modelに変数を設定
             eventPage.setCommunityId(community_id);
             model.addAttribute(eventPage);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "event_registration";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -270,6 +371,15 @@ public class UIController {
             // modelに変数を設定
             MyPage myPage = communityRestClient.getMyPage(token);
             model.addAttribute(myPage);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "community_selector";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -290,6 +400,15 @@ public class UIController {
             EventPage eventPage = eventService.addEvent(token,ePage);
             // modelに変数を設定
             model.addAttribute(eventPage);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "event";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -309,6 +428,15 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("event list API");
         try {
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             List<EventPage> eventList = eventRestClient.getEventListApi();
             model.addAttribute("eventList",eventList);
             return "event_list";
@@ -334,6 +462,15 @@ public class UIController {
 
             // modelに変数を設定
             model.addAttribute(eventPage);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             return "event";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
@@ -349,6 +486,15 @@ public class UIController {
             HttpServletResponse response, Model model) {
         logger.info("community keyword-search API");
         try {
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             List<EventPage> eventList = eventRestClient.searchEventByKeywordApi(keyword);
             model.addAttribute("eventList",eventList);
             return "event_list";
@@ -366,6 +512,15 @@ public class UIController {
             Model model) {
         logger.info("new network registration API");
         try {
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
             //Event newEvent = new Event();
             // modelに変数を設定
             //model.addAttribute(newEvent);

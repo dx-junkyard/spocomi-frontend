@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
     <title>スポコミ</title>
+    <style th:utext="${inlineCss}"></style>
 </head>
 <body>
 
@@ -28,13 +28,21 @@
 
     <!-- Tag Filters -->
     <div class="tags">
+        <span onclick="filterByTag('軽スポーツ')">#軽スポーツ</span>
+        <span onclick="filterByTag('気軽')">#気軽</span>
+        <span onclick="filterByTag('初心者')">#初心者</span>
+        <span onclick="filterByTag('公園')">#公園</span>
+        <span onclick="filterByTag('毎週')">#毎週</span>
+        <span onclick="filterByTag('日曜')">#日曜</span>
+    </div>
+    <!--div class="tags">
         <span>#軽スポーツ</span>
         <span>#球技</span>
         <span>#シニア歓迎</span>
         <span>#公園</span>
         <span>#体育館</span>
         <span>#都市内</span>
-    </div>
+    </div-->
 
     <!-- Community Card -->
     <div class="community-card-container">
@@ -44,7 +52,9 @@
                 <!-- 下1/3のグラデーションに重ねたテキスト -->
                 <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
                 <!-- 星型マーク -->
-                <span class="favorite-icon" onclick="toggleFavorite(this)" th:attr="data-community-id=${communitySummary.id}">★</span>
+                <span class="favorite-icon" onclick="toggleFavorite(this)" th:attr="data-community-id=${communitySummary.id}"
+                      th:classappend="${communitySummary.fav == 1} ? 'active' : ''">★</span>
+                <!--span class="favorite-icon" onclick="toggleFavorite(this)" th:attr="data-community-id=${communitySummary.id}">★</span-->
             </div>
             <h2 th:text="${communitySummary.name}"></h2>
             <p th:text="${communitySummary.summaryMessage}"></p>
@@ -66,7 +76,7 @@
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script th:utext="${inlineJs}"></script>
     <script>
         // お気に入りの星型アイコンをクリックすると黄色に変更
         function toggleFavorite(element) {
@@ -111,6 +121,47 @@
             window.location.href = '/v1/community/' + communityId + '/community-home';
         }
     </script>
+    <script>
+        function filterByTag(tag) {
+            const communityCards = document.querySelectorAll('.community-card');
+
+            communityCards.forEach(card => {
+                // Get text content from the name, summaryPr, and summaryMessage elements
+                const name = card.querySelector('h2').innerText.toLowerCase();
+                const summaryPr = card.querySelector('.overlay-text').innerText.toLowerCase();
+                const summaryMessage = card.querySelector('p').innerText.toLowerCase();
+
+                // Convert the tag to lowercase for case-insensitive comparison
+                const lowerTag = tag.toLowerCase();
+
+                // Check if the tag is included in any of the fields
+                if (name.includes(lowerTag) || summaryPr.includes(lowerTag) || summaryMessage.includes(lowerTag)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+    <!--script>
+        function filterByTag(tag) {
+            const communityCards = document.querySelectorAll('.community-card');
+
+            communityCards.forEach(card => {
+                // Get the data-tags attribute or set an empty string if it's missing
+                const tags = card.getAttribute('data-tags') || '';
+
+                // Split tags only if data-tags is not empty
+                const tagList = tags ? tags.split(' ') : [];
+
+                if (tagList.includes(tag)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script-->
 </body>
 </html>
 

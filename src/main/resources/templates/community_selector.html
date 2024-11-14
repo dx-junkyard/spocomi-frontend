@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
     <title>イベント作成</title>
+    <style th:utext="${inlineCss}"></style>
 </head>
 <body>
     <!-- Header -->
@@ -48,7 +48,7 @@
         <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <script th:src="@{/js/spocomi_menu.js}"></script>
+    <script th:utext="${inlineJs}"></script>
     <script>
         function navigateToEventRegistration() {
             var selectedCommunityId = document.getElementById('community-select').value;
