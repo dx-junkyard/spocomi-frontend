@@ -1,6 +1,5 @@
 package com.dxjunkyard.spocomi.controller;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
@@ -506,24 +505,28 @@ public class UIController {
     /*
      * イベント新規作成
      */
-    @GetMapping("/network/new")
+    @GetMapping("/community/network/new/step2/{community_id}")
     public String getNewNetwork(
             @CookieValue(value="_token", required=false) String token,
+            @PathVariable(value="community_id", required=true) Long communityId,
             Model model) {
         logger.info("new network registration API");
         try {
+            Networking networking = Networking.builder()
+                    .myCommunityId(communityId)
+                    .build();
             // css/jsの設定
             // resourceをそれぞれ1つの文字列に結合
             List<String> cssPaths = List.of("static/css/spocomi.css");
             String cssContents = combineResources(cssPaths);
-            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/visibility.js");
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/date_formatter.js","static/js/spocomi_networking.js");
             String jsContents = combineResources(jsPaths);
             // Thymeleafのモデルにresourceを設定
             model.addAttribute("inlineCss", cssContents);
             model.addAttribute("inlineJs", jsContents);
             //Event newEvent = new Event();
             // modelに変数を設定
-            //model.addAttribute(newEvent);
+            model.addAttribute(networking);
             return "networking";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
