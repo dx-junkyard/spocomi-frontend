@@ -9,16 +9,29 @@ function searchCommunity(button) {
         return;
     }
 
-    // Simulate search and result display
-    communityNameDiv.textContent = "サッカー愛好会"; // Example of a community name
+    // Fetch community name from API using the communityId
+    const communityId = input.value.trim();
+    fetch(`/v1/api/community/${communityId}/community-name`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('コミュニティが見つかりません');
+            }
+            return response.json();
+        })
+        .then(data => {
+            communityNameDiv.textContent = data.communityName;
 
-    // Disable search button, activate delete button
-    button.disabled = true;
-    button.style.display = "none";
-    deleteButton.style.display = "inline-block";
+            // Disable search button, activate delete button
+            button.disabled = true;
+            button.style.display = "none";
+            deleteButton.style.display = "inline-block";
 
-    // Add a new row for the next community
-    addNewCommunityRow();
+            // Add a new row for the next community
+            addNewCommunityRow();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
 }
 
 function deleteCommunity(button) {
@@ -30,9 +43,10 @@ function deleteCommunity(button) {
     // Check if any rows remain for activating group creation button
     checkGroupCreationButton();
 }
+
 function addNewCommunityRow() {
     const container = document.getElementById('community-container');
-    
+
     const newRow = document.createElement('div');
     newRow.className = 'community-row';
     newRow.innerHTML = `

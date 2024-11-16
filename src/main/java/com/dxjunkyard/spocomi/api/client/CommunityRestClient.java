@@ -181,6 +181,27 @@ public class CommunityRestClient {
         }
     }
 
+    public String getCommunityName(String token, Long community_id) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/" + community_id.toString() + "/community-name";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "";
+        }
+    }
+
     public String uploadPhoto(String token, MultipartFile multipartFile) {
         RestTemplate restTemplate = new RestTemplate();
 

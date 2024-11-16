@@ -61,7 +61,10 @@
                 イベント作成
             </button>
             <button class="message-button">招待リンク</button>
-            <button class="network-button">連携</button>
+            <button class="network-button" th:attr="data-community-id=${communityPage.id}"
+                    th:data-networking-url="@{/v1/community/network/new/step2/{communityId}(communityId=${communityPage.id})}"
+                    onclick="createNetwork(this)">
+                連携</button>
         </div>
 
     </div>
@@ -106,6 +109,10 @@
         }
         function createCommunityEvent(element) {
             const url = element.getAttribute('data-url');
+            window.location.href = url;
+        }
+        function createNetwork(element) {
+            const url = element.getAttribute('data-networking-url');
             window.location.href = url;
         }
         /*
