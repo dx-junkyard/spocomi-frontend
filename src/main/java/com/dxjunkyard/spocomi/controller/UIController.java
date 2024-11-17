@@ -512,7 +512,7 @@ public class UIController {
             Model model) {
         logger.info("new network registration API");
         try {
-            Networking networking = Networking.builder()
+            CommunityNetworking networking = CommunityNetworking.builder()
                     .myCommunityId(communityId)
                     .build();
             // css/jsの設定
@@ -526,7 +526,7 @@ public class UIController {
             model.addAttribute("inlineJs", jsContents);
             //Event newEvent = new Event();
             // modelに変数を設定
-            model.addAttribute(networking);
+            model.addAttribute("networking",networking);
             return "networking";
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());

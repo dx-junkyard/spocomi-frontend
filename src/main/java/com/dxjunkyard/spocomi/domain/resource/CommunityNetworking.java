@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Networking {
+public class CommunityNetworking {
     private Long myCommunityId;
     private List<Long> partnerCommunityId;
     private List<String> partnerCommunityName;
