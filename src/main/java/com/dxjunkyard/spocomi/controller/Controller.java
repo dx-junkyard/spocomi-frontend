@@ -2,6 +2,7 @@ package com.dxjunkyard.spocomi.controller;
 
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.UserRestClient;
+import com.dxjunkyard.spocomi.domain.resource.CommunityNetworking;
 import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityName;
 import com.dxjunkyard.spocomi.domain.resource.response.EventPage;
@@ -51,6 +52,22 @@ public class Controller {
             return ResponseEntity.status(500).body(-1);
         }
     }
+
+    @PostMapping("/create-group")
+    public ResponseEntity<?> createGroup(@RequestBody CommunityNetworking request,
+                                               @CookieValue(value = "_token", defaultValue = "") String token) {
+
+        // ここでデータベースの更新処理を行う（お気に入り状態の設定/解除）
+        Long newGroupId = communityRestClient.createGroup(token, request);
+
+        if (newGroupId == -1L) {
+            return ResponseEntity.status(500).body(-1);
+        } else {
+            // 更新後のステータスを返却
+            return ResponseEntity.ok(newGroupId);
+        }
+    }
+
 
     @GetMapping("/{community_id}/community-name")
     public ResponseEntity<?> getCommunityName(

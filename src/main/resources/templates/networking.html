@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>コミュニティ連携</title>
-    <link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/>
+    <!--link type="text/css" rel="stylesheet" th:href="@{/css/spocomi.css}"  media="screen,projection"/-->
     <style th:utext="${inlineCss}"></style>
 </head>
 <body>
@@ -18,8 +18,13 @@
         </div>
     </div>
 
-    <div class="container"  th:object="${networking}">
+    <div class="container" th:object="${networking}" id="networking-container"
+        th:data-my-community-id="${networking.myCommunityId}"
+        th:data-partner-community-id="${networking.partnerCommunityId}"
+        th:data-partner-community-name="${networking.partnerCommunityName}">
         <h1>コミュニティ連携</h1>
+    <!--div class="container"  th:object="${networking}">
+        <h1>コミュニティ連携</h1-->
 
         <div class="group-creation">
             <button id="create-group-btn" disabled>結成</button>

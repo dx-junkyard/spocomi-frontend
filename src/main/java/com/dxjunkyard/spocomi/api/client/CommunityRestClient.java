@@ -1,6 +1,7 @@
 package com.dxjunkyard.spocomi.api.client;
 
 import com.dxjunkyard.spocomi.domain.resource.Community;
+import com.dxjunkyard.spocomi.domain.resource.CommunityNetworking;
 import com.dxjunkyard.spocomi.domain.resource.CommunitySummary;
 import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityPage;
@@ -119,6 +120,23 @@ public class CommunityRestClient {
            logger.info("RestClient error : {}", e.toString());
            return new Community();
        }
+    }
+
+    public Long createGroup(String token, CommunityNetworking request) {
+        try {
+            String url = backend_api_url + "/v1/api/communities/community/create-group";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<CommunityNetworking> requestEntity = new HttpEntity<>(request,headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Long> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, Long.class);
+            return response.getBody();
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return -1L;
+        }
     }
 
     public Community updateCommunity(String token, Community community) {
