@@ -24,9 +24,3 @@ function displayVisibility(visibilityValue) {
     return visibilityOptions[visibilityValue] || "不明";
 }
 
-/*
-function displayVisibility(visibilityValue, displayElementId) {
-    const displayElement = document.getElementById(displayElementId);
-    displayElement.textContent = visibilityOptions[visibilityValue] || "不明";
-}
-*/

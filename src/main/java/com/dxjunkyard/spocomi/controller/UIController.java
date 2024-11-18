@@ -503,17 +503,19 @@ public class UIController {
         }
     }
     /*
-     * イベント新規作成
+     * コミュニティグループ作成
      */
     @GetMapping("/community/network/new/step2/{community_id}")
     public String getNewNetwork(
             @CookieValue(value="_token", required=false) String token,
-            @PathVariable(value="community_id", required=true) Long communityId,
+            @PathVariable(value="community_id", required=true) Long myCommunityId,
             Model model) {
         logger.info("new network registration API");
         try {
+            String myCommunityName = communityRestClient.getCommunityName(token, myCommunityId);
             CommunityNetworking networking = CommunityNetworking.builder()
-                    .myCommunityId(communityId)
+                    .myCommunityName(myCommunityName)
+                    .myCommunityId(myCommunityId)
                     .build();
             // css/jsの設定
             // resourceをそれぞれ1つの文字列に結合
