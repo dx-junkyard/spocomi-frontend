@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>コミュニティ登録フォーム</title>
     <style th:utext="${inlineCss}"></style>
-    <style>
+    <!--style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
             margin: 0;
@@ -120,7 +120,7 @@
         .submit-btn:hover {
             background-color: #6e46d1;
         }
-    </style>
+    </style-->
 </head>
 <body>
 
@@ -142,10 +142,6 @@
             <!-- 説明文 -->
             <label for="description">説明文</label>
             <textarea id="description" th:field="*{description}" rows="4" required></textarea>
-
-            <!-- tags -->
-            <label for="tags">タグ</label>
-            <input type="text" id="tags" name="tags" placeholder="テニス, 鬼ごっこ">
 
             <!-- 画像アップロード -->
             <div class="image-upload">
@@ -189,44 +185,6 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:utext="${inlineJs}"></script>
-    <script>
-        function previewImage(event) {
-            const imagePreview = document.getElementById('imagePreview');
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                imagePreview.innerHTML = '<img src="' + e.target.result + '" alt="Uploaded Image">';
-            }
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('imageUpload').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('imageUrl', file);
-
-                fetch('/v1/api/community/upload-image', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.text())
-                    .then(data => {
-                        // 画像アップロード後の処理
-                        const imagePreview = document.getElementById('imagePreview');
-                        imagePreview.innerHTML = `<img src="${data}" alt="Uploaded Image">`;
-                    })
-                    .catch(error => {
-                        console.error('Error uploading image:', error);
-                    });
-            }
-        });
-    </script>
-
 </body>
 </html>
 

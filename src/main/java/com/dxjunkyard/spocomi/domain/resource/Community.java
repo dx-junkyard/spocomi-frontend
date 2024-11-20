@@ -14,7 +14,6 @@ public class Community {
     private String ownerId;
     private Long location;
     private String name;
-    private String summaryImageUrl;
     private String summaryMessage;
     private String summaryPr;
     private String description;

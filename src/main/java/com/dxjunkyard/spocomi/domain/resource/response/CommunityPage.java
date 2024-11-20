@@ -19,9 +19,11 @@ public class CommunityPage {
     private Long id;
     private String location;
     private String name;
-    private String summaryImageUrl;
+    private String summaryMessage;
+    private String summaryPr;
     private String profileImageUrl;
     private String description;
+    private Integer memberCount;
     private Integer visibility;
     private List<EventSchedule> eventScheduleList;
     private List<ActivityHistory> activityHistoryList;

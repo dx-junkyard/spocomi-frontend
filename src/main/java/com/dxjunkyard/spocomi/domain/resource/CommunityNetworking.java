@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CommunityNetworking {
     private Long myCommunityId;
+    private String myCommunityName;
     private List<Long> partnerCommunityId;
     private List<String> partnerCommunityName;
+    private String expirationAt;
 }

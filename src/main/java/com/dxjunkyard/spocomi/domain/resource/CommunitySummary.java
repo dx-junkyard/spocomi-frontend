@@ -14,7 +14,7 @@ public class CommunitySummary {
     private String name;
     private Long placeId;
     private String summaryPr;
-    private String summaryImageUrl;
+    private String profileImageUrl;
     private String summaryMessage;
     private Integer fav;
 }

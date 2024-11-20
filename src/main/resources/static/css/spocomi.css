@@ -112,15 +112,27 @@ body {
 /* コミュニティ選択エリア */
 .community-select-area {
     display: flex;
+    justify-content: flex-start; /* Adjust alignment as needed */
+    align-items: center;
+    max-width: 400px; /* Set a reasonable maximum width */
+    margin-bottom: 20px;
+    margin: 0 auto; /* Center the community select area if desired */
+/*
+    display: flex;
     justify-content: flex-end;
     margin-bottom: 20px;
+ */
 }
 .community-select-area select {
+    flex: 1; /* Make it take the remaining space */
     padding: 10px;
     font-size: 1em;
     margin-right: 10px;
+    max-width: 80%; /* Adjust to control select dropdown width */
+    box-sizing: border-box;
 }
 .community-select-area button {
+    flex-shrink: 0;
     padding: 10px 15px;
     font-size: 1em;
     background-color: #8259f1;
