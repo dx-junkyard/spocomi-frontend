@@ -48,7 +48,7 @@
     <div class="community-card-container">
         <div th:each="communitySummary : ${communitySummaryList}" class="community-card">
             <div class="image-container">
-                <img th:src="${communitySummary.summaryImageUrl}" th:alt="${communitySummary.name}">
+                <img th:src="${communitySummary.profileImageUrl}" th:alt="${communitySummary.name}">
                 <!-- 下1/3のグラデーションに重ねたテキスト -->
                 <div class="overlay-text" th:text="${communitySummary.summaryPr}"></div>
                 <!-- 星型マーク -->

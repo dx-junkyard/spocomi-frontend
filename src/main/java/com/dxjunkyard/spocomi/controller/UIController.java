@@ -2,6 +2,7 @@ package com.dxjunkyard.spocomi.controller;
 
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
+import com.dxjunkyard.spocomi.domain.dto.CommunityDto;
 import com.dxjunkyard.spocomi.domain.resource.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
 import com.dxjunkyard.spocomi.service.CommunityService;
@@ -219,7 +220,7 @@ public class UIController {
         try {
             Community regiCommunity = communityRestClient.postCommunityRegistration(token,community);
             String newPhotoName = communityService.renamePhoto(regiCommunity.getOwnerId(),regiCommunity.getId());
-            regiCommunity.setSummaryImageUrl(newPhotoName);
+            regiCommunity.setProfileImageUrl(newPhotoName);
             communityRestClient.updateCommunity(token, regiCommunity);
             // modelに変数を設定
             model.addAttribute(regiCommunity);
@@ -239,6 +240,67 @@ public class UIController {
         }
     }
 
+    /*
+     * コミュニティ新規作成（登録画面の表示）
+     */
+    @GetMapping("/community/{community_id}/edit")
+    public String getEditCommunity(
+            @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long community_id,
+            Model model) {
+        logger.info("new community registration API");
+        try {
+            CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
+            Community community = CommunityDto.toCommunity(communityPage, null);
+            // modelに変数を設定
+            model.addAttribute(community);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css", "static/css/community_form.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/image_upload.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+            return "community_edit";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
+
+    /*
+     * コミュニティ新規作成（登録結果確認）
+     */
+    @PostMapping("/community/edit")
+    public String postEditCommunity(
+            @CookieValue(value="_token", required=false) String token,
+            Community community,
+            Model model) {
+        logger.info("new community registration API");
+        try {
+            Community regiCommunity = communityRestClient.postCommunityRegistration(token, community);
+            String newPhotoName = communityService.renamePhoto(regiCommunity.getOwnerId(),regiCommunity.getId());
+            regiCommunity.setProfileImageUrl(newPhotoName);
+            communityRestClient.updateCommunity(token, regiCommunity);
+            // modelに変数を設定
+            model.addAttribute(regiCommunity);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+            return "community_registration_confirm";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
 
     /*
      *

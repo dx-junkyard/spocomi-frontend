@@ -160,7 +160,7 @@ document.getElementById('create-group-btn').addEventListener('click', () => {
             // Navigate to the community introduction page
             const newCommunityId = data;
             const link = document.createElement('a');
-            link.href = `/v1/community/${newCommunityId}/community-home`;
+            link.href = `/v1/community/${newCommunityId}/edit`;
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click(); // Simulate a click on the link
