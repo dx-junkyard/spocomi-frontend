@@ -117,12 +117,8 @@ body {
     max-width: 400px; /* Set a reasonable maximum width */
     margin-bottom: 20px;
     margin: 0 auto; /* Center the community select area if desired */
-/*
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
- */
 }
+
 .community-select-area select {
     flex: 1; /* Make it take the remaining space */
     padding: 10px;
@@ -131,6 +127,7 @@ body {
     max-width: 80%; /* Adjust to control select dropdown width */
     box-sizing: border-box;
 }
+
 .community-select-area button {
     flex-shrink: 0;
     padding: 10px 15px;
@@ -310,7 +307,12 @@ body {
     color: white;
 }
 
-.message-button {
+.invitation-button {
+    background-color: #8259f1;
+    color: white;
+}
+
+.edit-button {
     background-color: #8259f1;
     color: white;
 }

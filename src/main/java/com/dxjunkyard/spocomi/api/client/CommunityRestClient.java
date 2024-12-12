@@ -88,7 +88,7 @@ public class CommunityRestClient {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            String url = backend_api_url + "/v1/api/communities/" + community_id.toString();
+            String url = backend_api_url + "/v1/api/communities/" + community_id.toString() + "/page";
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -102,6 +102,27 @@ public class CommunityRestClient {
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return new CommunityPage();
+        }
+    }
+
+    public Community  getCommunityRegistration(String token, Long community_id) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/" + community_id.toString() + "/registration";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<Community> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Community.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return new Community();
         }
     }
 
@@ -120,6 +141,23 @@ public class CommunityRestClient {
            logger.info("RestClient error : {}", e.toString());
            return new Community();
        }
+    }
+
+    public Community postEditCommunity(String token, Community community) {
+        try {
+            String url = backend_api_url + "/v1/api/communities/community/edit";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<Community> requestEntity = new HttpEntity<>(community,headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Community> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, Community.class);
+            return response.getBody();
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return new Community();
+        }
     }
 
     public Long createGroup(String token, CommunityNetworking request) {

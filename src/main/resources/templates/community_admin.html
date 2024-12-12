@@ -54,17 +54,24 @@
 
         <!-- Buttons -->
         <div class="buttons">
-            <!--button class="event-button" th:attr="data-community-id=${communityPage.id}" onclick="createEvent(this)">イベント作成</button-->
-            <button class="event-button" th:attr="data-community-id=${communityPage.id}"
+            <button class="event-button"
+                    th:attr="data-community-id=${communityPage.id}"
                     th:data-url="@{/v1/community/event/new/step2/{communityId}(communityId=${communityPage.id})}"
                     onclick="createCommunityEvent(this)">
                 イベント作成
             </button>
-            <button class="message-button">招待リンク</button>
+            <button class="invitation-button">招待リンク</button>
             <button class="network-button" th:attr="data-community-id=${communityPage.id}"
                     th:data-networking-url="@{/v1/community/network/new/step2/{communityId}(communityId=${communityPage.id})}"
                     onclick="createNetwork(this)">
-                連携</button>
+                連携
+            </button>
+            <button class="edit-button"
+                    th:attr="data-community-id=${communityPage.id}"
+                    th:data-edit-community-url="@{/v1/community/{communityId}/edit(communityId=${communityPage.id})}"
+                    onclick="editCommunity(this)">
+                編集
+            </button>
         </div>
 
     </div>
@@ -109,6 +116,10 @@
         }
         function createCommunityEvent(element) {
             const url = element.getAttribute('data-url');
+            window.location.href = url;
+        }
+        function editCommunity(element) {
+            const url = element.getAttribute('data-edit-community-url');
             window.location.href = url;
         }
         function createNetwork(element) {

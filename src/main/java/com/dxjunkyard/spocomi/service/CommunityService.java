@@ -1,13 +1,17 @@
 package com.dxjunkyard.spocomi.service;
 
+import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
+import com.dxjunkyard.spocomi.domain.resource.Community;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.io.Files.getFileExtension;
@@ -22,6 +26,9 @@ public class CommunityService {
     @Value("${file.image-dir}")
     private String image_dir;
 
+    @Autowired
+    private CommunityRestClient communityRestClient;
+
     private Optional<File> findFileWithId(String myId) {
         File directory = new File(upload_dir);
         if (directory.exists() && directory.isDirectory()) {
@@ -31,6 +38,22 @@ public class CommunityService {
             }
         }
         return Optional.empty();
+    }
+
+    public Community editCommunity(String token, Community community) {
+        Community regiCommunity;
+        if (Objects.isNull(community.getId())) {
+            regiCommunity = communityRestClient.postCommunityRegistration(token, community);
+        } else {
+            regiCommunity = communityRestClient.postEditCommunity(token, community);
+        }
+        // ownerID(before)とcommunityID(after)で画像パスをリネームする
+        String newPhotoName = renamePhoto(regiCommunity.getOwnerId(), regiCommunity.getId());
+        if (!Objects.equals(newPhotoName, null)) {
+            regiCommunity.setProfileImageUrl(newPhotoName);
+            communityRestClient.updateCommunity(token, regiCommunity);
+        }
+        return regiCommunity;
     }
 
     public String renamePhoto(String myId, Long communityId) {
@@ -55,14 +78,52 @@ public class CommunityService {
             } else {
                 System.out.println("No file found with id: " + myId);
             }
-            return "";
+            return null;
         } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+            logger.debug(e.toString());
+            return null;
         }
     }
 
     public String savePhoto(String myId, MultipartFile photo) {
+        try {
+            // ファイルを保存する
+            String fileName = photo.getOriginalFilename();
+            String fileExt = ""; // ファイルの拡張子
+            if (fileName != null && fileName.contains(".")) {
+                fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
+            } else {
+                return ""; // 拡張子がない場合
+            }
+
+            // 保存先ディレクトリのパスを定義
+            File uploadDir = new File(upload_dir);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs(); // 必要ならディレクトリを作成
+            }
+
+            // 同じ myId を持つ既存のファイルを検索して削除
+            File[] existingFiles = uploadDir.listFiles((dir, name) -> name.startsWith(myId + "."));
+            if (existingFiles != null) {
+                for (File existingFile : existingFiles) {
+                    existingFile.delete();
+                }
+            }
+
+            // 新しいファイルを保存
+            String saveFileName = myId + "." + fileExt;
+            String savePath = upload_dir + saveFileName;
+            File saveFile = new File(savePath);
+            photo.transferTo(saveFile);
+
+            return image_dir + saveFileName;
+        } catch (IOException e) {
+            logger.info("savePhoto error", e);
+            return "";
+        }
+    }
+
+    public String old_savePhoto(String myId, MultipartFile photo) {
         try {
             // ファイルを保存する
             String fileName = photo.getOriginalFilename();

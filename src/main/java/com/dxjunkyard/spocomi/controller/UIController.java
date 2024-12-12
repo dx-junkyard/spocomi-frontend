@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -93,7 +94,10 @@ public class UIController {
      * LINE Auth
      */
     @GetMapping("/auth")
-    public String line_auth(HttpServletResponse response, @RequestParam("code") String code, Model model){
+    public String line_auth(HttpServletResponse response,
+                            @RequestParam("code") String code,
+//                            @RequestParam(name = "state", required = false) String state,
+                            Model model){
         logger.info("LINE Auth API");
         logger.info("sns register API");
         String lineId = ""; // LINE user ID
@@ -194,9 +198,9 @@ public class UIController {
             model.addAttribute(newCommunity);
             // css/jsの設定
             // resourceをそれぞれ1つの文字列に結合
-            List<String> cssPaths = List.of("static/css/spocomi.css");
+            List<String> cssPaths = List.of("static/css/spocomi.css", "static/css/community_form.css");
             String cssContents = combineResources(cssPaths);
-            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/image_upload.js");
             String jsContents = combineResources(jsPaths);
             // Thymeleafのモデルにresourceを設定
             model.addAttribute("inlineCss", cssContents);
@@ -250,8 +254,8 @@ public class UIController {
             Model model) {
         logger.info("new community registration API");
         try {
-            CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
-            Community community = CommunityDto.toCommunity(communityPage, null);
+            Community community = communityRestClient.getCommunityRegistration(token, community_id);
+            //Community community = CommunityDto.toCommunity(communityPage, null);
             // modelに変数を設定
             model.addAttribute(community);
             // css/jsの設定
@@ -280,10 +284,7 @@ public class UIController {
             Model model) {
         logger.info("new community registration API");
         try {
-            Community regiCommunity = communityRestClient.postCommunityRegistration(token, community);
-            String newPhotoName = communityService.renamePhoto(regiCommunity.getOwnerId(),regiCommunity.getId());
-            regiCommunity.setProfileImageUrl(newPhotoName);
-            communityRestClient.updateCommunity(token, regiCommunity);
+            Community regiCommunity = communityService.editCommunity(token, community);
             // modelに変数を設定
             model.addAttribute(regiCommunity);
             // css/jsの設定
