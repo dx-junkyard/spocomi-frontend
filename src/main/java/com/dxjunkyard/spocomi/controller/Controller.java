@@ -5,7 +5,6 @@ import com.dxjunkyard.spocomi.api.client.UserRestClient;
 import com.dxjunkyard.spocomi.domain.resource.CommunityNetworking;
 import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityName;
-import com.dxjunkyard.spocomi.domain.resource.response.EventPage;
 import com.dxjunkyard.spocomi.service.CommunityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/community")

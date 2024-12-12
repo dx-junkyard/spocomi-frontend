@@ -35,14 +35,6 @@
         <span onclick="filterByTag('毎週')">#毎週</span>
         <span onclick="filterByTag('日曜')">#日曜</span>
     </div>
-    <!--div class="tags">
-        <span>#軽スポーツ</span>
-        <span>#球技</span>
-        <span>#シニア歓迎</span>
-        <span>#公園</span>
-        <span>#体育館</span>
-        <span>#都市内</span>
-    </div-->
 
     <!-- Community Card -->
     <div class="community-card-container">
@@ -57,7 +49,7 @@
                 <!--span class="favorite-icon" onclick="toggleFavorite(this)" th:attr="data-community-id=${communitySummary.id}">★</span-->
             </div>
             <h2 th:text="${communitySummary.name}"></h2>
-            <p th:text="${communitySummary.summaryMessage}"></p>
+            <p th:text="'id:' + ${communitySummary.id} + ') ' + ${communitySummary.summaryMessage}"></p>
             <button th:onclick="'navigateToCommunityHome(' + ${communitySummary.id} +')'">詳しくみる</button>
         </div>
     </div>
