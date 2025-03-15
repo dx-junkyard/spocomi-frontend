@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム画面</title>
+    <style th:utext="${inlineCss}"></style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>スポコミ</h1>
+        <div class="hamburger-menu" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- コミュニティ選択 -->
+        <div class="community-select-area">
+            <select name="community-select" id="community-select">
+                <option value="">コミュニティを選択</option>
+                <option th:each="community : ${myPage.communitySelectorList}"
+                        th:value="${community.communityId}"
+                        th:text="${community.communityName}">
+                </option>
+            </select>
+            <a id="community-home-link" href="#"><button type="button" onclick="navigateToCommunityHome()">決定</button></a>
+        </div>
+
+        <!-- アクティビティリスト -->
+        <div class="activity-list">
+            <h3>最近の動き</h3>
+            <ul th:each="event: ${myPage.upcommingEventList}">
+                <li th:text="${dateUtils.formatLocalDateTime(event.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${event.eventName} + '@' + ${event.location}"></li>
+            </ul>
+        </div>
+
+        <!-- 招待リスト -->
+        <div class="invitation-list">
+            <h3>イベントへの招待</h3>
+            <ul th:each="invi: ${myPage.eventInvitationList}">
+                <li th:text="${dateUtils.formatLocalDateTime(invi.dateTime, 'MM月dd日 HH:mm')} + ' :  ' + ${invi.communityName} + '@' + ${invi.location}">
+                    <button class="invite-button"  onclick="showInviteDialog()">参加</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- お気に入りコミュニティ -->
+        <div class="favorite-list">
+            <h3>気になるコミュニティ</h3>
+            <ul>
+                <li>フットサルサークル</li>
+                <li>ヨガ同好会</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div id="inviteModal" class="modal">
+        <div class="modal-content">
+            <p>西東京市サッカークラブ<br>11月17日のサッカー交流会に参加しますか？</p>
+            <button class="yes-btn" onclick="closeInviteDialog()">はい</button>
+            <button class="no-btn" onclick="closeInviteDialog()">いいえ</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        ©spocomi
+    </div>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu" id="side-menu">
+        <a th:href="@{/v1/mypage}">マイPage</a>
+        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
+        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <script th:utext="${inlineJs}"></script>
+    <script>
+        // Function to show the invite dialog
+        function showInviteDialog() {
+            document.getElementById('inviteModal').style.display = 'flex';
+        }
+
+        // Function to close the invite dialog
+        function closeInviteDialog() {
+            document.getElementById('inviteModal').style.display = 'none';
+        }
+
+        function navigateToCommunityHome() {
+            var selectedCommunityId = document.getElementById('community-select').value;
+            if (selectedCommunityId) {
+                // Replace the URL with the selected community ID
+                var link = document.getElementById('community-home-link');
+                link.href = '/v1/community/' + selectedCommunityId + '/community-home';
+                link.click(); // Simulate a click on the link
+            } else {
+                alert('コミュニティを選択してください');
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -2,7 +2,6 @@ package com.dxjunkyard.spocomi.controller;
 
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
-import com.dxjunkyard.spocomi.domain.dto.CommunityDto;
 import com.dxjunkyard.spocomi.domain.resource.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
 import com.dxjunkyard.spocomi.service.CommunityService;
@@ -65,12 +64,20 @@ public class UIController {
 
     @GetMapping("/user/line-login")
     @ResponseBody
-    public void linelogin(HttpServletResponse httpServletResponse) {
+    public void linelogin(
+                        HttpServletResponse httpServletResponse,
+                       @RequestParam(name="state", required = false) String state) {
         logger.info("line login API");
-        String redirect_url = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=" + client_id + "&redirect_uri=" + login_redirect_uri + "&state=1&scope=openid%20profile";
+        String redirect_url;
+        if (state == null) {
+            redirect_url = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=" + client_id + "&redirect_uri=" + login_redirect_uri + "&state=null&scope=openid%20profile";
+        } else {
+            redirect_url = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=" + client_id + "&redirect_uri=" + login_redirect_uri + "&state=" + state + "&scope=openid%20profile";
+        }
         httpServletResponse.setHeader("Location", redirect_url);
         httpServletResponse.setStatus(302);
     }
+
 
     private static String combineResources(List<String> resourcePaths) {
         return resourcePaths.stream()
@@ -88,7 +95,57 @@ public class UIController {
                 .collect(Collectors.joining("\n"));  // 各リソースを改行で区切って結合
     }
 
+    /**
+     * LINE AuthTest
+     */
+    @GetMapping("/auth-test-mode")
+    public String line_auth_test(HttpServletResponse response,
+                            @CookieValue(value="_token", required=false) String token,
+                            @RequestParam("code") String code,
+                            @RequestParam(name = "state", required = false) String state,
+                            Model model){
+        logger.info("LINE Auth-test-mode API");
 
+        /*
+         */
+        logger.info("home API");
+        try {
+            // cookieを設定
+            Cookie cookie = new Cookie("_token",token);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            String html_name = null;
+            if (state.equals("null")) {
+                // ホーム画面に設定する情報をAPIで収集する
+                // コミュニティへのお誘い（おせっかい機能）
+                // 所属コミュニティの直近の活動予定一覧
+                // 所属コミュニティの直近の活動履歴一覧
+                MyPage myPage = communityRestClient.getMyPage(token);
+                model.addAttribute(myPage);
+                html_name = "spocomi_home";
+            } else {
+                Long community_id = communityRestClient.useInvitation(token, state);
+                CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
+                model.addAttribute(communityPage);
+                html_name = "community_visitor";
+            }
+            model.addAttribute(new DateUtils());
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+            return html_name;
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
 
     /**
      * LINE Auth
@@ -96,7 +153,7 @@ public class UIController {
     @GetMapping("/auth")
     public String line_auth(HttpServletResponse response,
                             @RequestParam("code") String code,
-//                            @RequestParam(name = "state", required = false) String state,
+                            @RequestParam(name = "state", required = false) String state,
                             Model model){
         logger.info("LINE Auth API");
         logger.info("sns register API");
@@ -117,34 +174,40 @@ public class UIController {
 
 
         /*
-         * 登録済/未登録に応じて対応を分ける
-         * lineIDが既に登録されている場合：
-         * このシステムへの登録を行う
          */
-        logger.info("register API");
+        logger.info("home API");
         try {
             // cookieを設定
             Cookie cookie = new Cookie("_token",token);
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            // ホーム画面に設定する情報をAPIで収集する
-            // コミュニティへのお誘い（おせっかい機能）
-            // 所属コミュニティの直近の活動予定一覧
-            // 所属コミュニティの直近の活動履歴一覧
-            MyPage myPage = communityRestClient.getMyPage(token);
-            model.addAttribute(myPage);
+            String html_name = null;
+            if (state.equals("null")) {
+                // ホーム画面に設定する情報をAPIで収集する
+                // コミュニティへのお誘い（おせっかい機能）
+                // 所属コミュニティの直近の活動予定一覧
+                // 所属コミュニティの直近の活動履歴一覧
+                MyPage myPage = communityRestClient.getMyPage(token);
+                model.addAttribute(myPage);
+                html_name = "spocomi_home";
+            } else {
+                Long community_id = communityRestClient.useInvitation(token, state);
+                CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
+                model.addAttribute(communityPage);
+                html_name = "community_visitor";
+            }
             model.addAttribute(new DateUtils());
             // css/jsの設定
             // resourceをそれぞれ1つの文字列に結合
             List<String> cssPaths = List.of("static/css/spocomi.css");
             String cssContents = combineResources(cssPaths);
-            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js", "static/js/community_select.js");
             String jsContents = combineResources(jsPaths);
             // Thymeleafのモデルにresourceを設定
             model.addAttribute("inlineCss", cssContents);
             model.addAttribute("inlineJs", jsContents);
-            return "spocomi_home";
+            return html_name;
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return "error"; // error page遷移
@@ -169,7 +232,7 @@ public class UIController {
             // resourceをそれぞれ1つの文字列に結合
             List<String> cssPaths = List.of("static/css/spocomi.css");
             String cssContents = combineResources(cssPaths);
-            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js", "static/js/community_select.js");
             String jsContents = combineResources(jsPaths);
             // Thymeleafのモデルにresourceを設定
             model.addAttribute("inlineCss", cssContents);
@@ -255,7 +318,6 @@ public class UIController {
         logger.info("new community registration API");
         try {
             Community community = communityRestClient.getCommunityRegistration(token, community_id);
-            //Community community = CommunityDto.toCommunity(communityPage, null);
             // modelに変数を設定
             model.addAttribute(community);
             // css/jsの設定
@@ -356,19 +418,46 @@ public class UIController {
     }
 
     /*
-     * 各コミュニティのホーム
+     * 招待リンク作成ページへの遷移
+     */
+    @GetMapping("/community/{community_id}/invite")
+    public String createInvitation(
+            @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long community_id,
+            Model model) {
+        logger.info("create invitation API");
+        try {
+            // modelに変数を設定
+            model.addAttribute(community_id);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/spocomi.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js");
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+            return "invite_link";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+
+    }
+
+    /*
+     * IDに対応するコミュニティのホームへの遷移
      */
     @GetMapping("/community/{community_id}/community-home")
     public String communityHome(
             @CookieValue(value="_token", required=false) String token,
-            HttpServletResponse response,
             @PathVariable Long community_id,
             Model model) {
-        logger.info("community list API");
+        logger.info("community home API");
         try {
             // 該当コミュニティにおけるユーザーのロールを確認
             // 該当コミュニティの情報を取得
-            //int role = 1;
             CommunityPage communityPage = communityRestClient.getCommunityPage(token, community_id);
 
             // modelに変数を設定
@@ -449,6 +538,30 @@ public class UIController {
         }
     }
 
+    @GetMapping("/reservation/{community_id}/new")
+    public String getNewReservation(
+            @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long community_id,
+            Model model) {
+        logger.info("new reservation registration API");
+        try {
+            //Community newCommunity = new Community();
+            //model.addAttribute(newCommunity);
+            // css/jsの設定
+            // resourceをそれぞれ1つの文字列に結合
+            List<String> cssPaths = List.of("static/css/reservation.css");
+            String cssContents = combineResources(cssPaths);
+            List<String> jsPaths = List.of("static/js/spocomi_menu.js","static/js/facility.js","static/js/calendar.js",  "static/js/reservation.js" );
+            String jsContents = combineResources(jsPaths);
+            // Thymeleafのモデルにresourceを設定
+            model.addAttribute("inlineCss", cssContents);
+            model.addAttribute("inlineJs", jsContents);
+            return "reservation_flow";
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return "error"; // error page遷移
+        }
+    }
     /*
      * イベント新規作成（登録実行）
      */
@@ -487,7 +600,7 @@ public class UIController {
     @GetMapping("/event/event_list")
     public String event_list(
             @CookieValue(value="_token", required=false) String token,
-            HttpServletResponse response, Model model) {
+            Model model) {
         logger.info("event list API");
         try {
             // css/jsの設定
@@ -513,7 +626,6 @@ public class UIController {
     @GetMapping("/event/{event_id}/display")
     public String eventPage(
             @CookieValue(value="_token", required=false) String token,
-            HttpServletResponse response,
             @PathVariable Long event_id,
             Model model) {
         logger.info("eventPage API");
@@ -545,7 +657,7 @@ public class UIController {
     public String event_keyword_search(
             @CookieValue(value="_token", required=false) String token,
             @RequestParam(value = "keyword", required = true) String keyword, // keywordパラメータを追加
-            HttpServletResponse response, Model model) {
+            Model model) {
         logger.info("community keyword-search API");
         try {
             // css/jsの設定

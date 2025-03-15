@@ -60,7 +60,11 @@
                     onclick="createCommunityEvent(this)">
                 イベント作成
             </button>
-            <button class="invitation-button">招待リンク</button>
+            <button class="invitation-button" th:attr="data-community-id=${communityPage.id}"
+                    th:data-invitation-url="@{/v1/community/{communityId}/invite(communityId=${communityPage.id})}"
+                    onclick="createInvitation(this)">
+                招待
+            </button>
             <button class="network-button" th:attr="data-community-id=${communityPage.id}"
                     th:data-networking-url="@{/v1/community/network/new/step2/{communityId}(communityId=${communityPage.id})}"
                     onclick="createNetwork(this)">
@@ -113,6 +117,10 @@
         // Function to close the invite dialog
         function closeInviteDialog() {
             document.getElementById('inviteModal').style.display = 'none';
+        }
+        function createInvitation(element) {
+            const url = element.getAttribute('data-invitation-url');
+            window.location.href = url;
         }
         function createCommunityEvent(element) {
             const url = element.getAttribute('data-url');
