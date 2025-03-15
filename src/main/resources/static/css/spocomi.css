@@ -225,7 +225,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: not-allowed;
-    font-size: 1em;
+    font-size: 0.9em;
 }
 
 .group-creation button.active {
@@ -290,7 +290,7 @@ body {
 
 .buttons button {
     padding: 10px 20px;
-    font-size: 1em;
+    font-size: 0.9em;
     border: none;
     border-radius: 25px;
     cursor: pointer;
@@ -349,7 +349,7 @@ body {
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.9em;
     margin: 0 10px;
 }
 

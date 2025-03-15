@@ -4,6 +4,7 @@ import com.dxjunkyard.spocomi.domain.resource.Community;
 import com.dxjunkyard.spocomi.domain.resource.CommunityNetworking;
 import com.dxjunkyard.spocomi.domain.resource.CommunitySummary;
 import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
+import com.dxjunkyard.spocomi.domain.resource.response.CommunityMemberList;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityPage;
 import com.dxjunkyard.spocomi.domain.resource.response.MyPage;
 import org.slf4j.Logger;
@@ -102,6 +103,61 @@ public class CommunityRestClient {
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return new CommunityPage();
+        }
+    }
+
+    public Long useInvitation(String token, String state) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/" + state + "/invitation";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<Long> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Long.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return null;
+        }
+    }
+
+    public String createInvitationCode(String token, Long communityId, Long eventId, Integer maxUses) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/invitation/create";
+            UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(url);
+            if (communityId != null) {
+                urlBuilder.queryParam("community_id", communityId.toString());
+            }
+            if (eventId != null) {
+                urlBuilder.queryParam("event_id", eventId.toString());
+            }
+            if (maxUses != null) {
+                urlBuilder.queryParam("max_uses", maxUses.toString());
+            } else {
+                urlBuilder.queryParam("max_uses", "1");
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    urlBuilder.toUriString(),
+                    HttpMethod.GET,
+                    entity,
+                    String.class);
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return null;
         }
     }
 
@@ -255,6 +311,27 @@ public class CommunityRestClient {
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
             return "";
+        }
+    }
+
+    public List<CommunityMemberList> getMyCommunityList(String token) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = backend_api_url + "/v1/api/communities/my-community-list";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<CommunityMemberList>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<List<CommunityMemberList>>() {});
+            return response.getBody();
+
+        } catch (RestClientException e) {
+            logger.info("RestClient error : {}", e.toString());
+            return new ArrayList<CommunityMemberList>();
         }
     }
 

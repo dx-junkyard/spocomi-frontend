@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>招待リンク作成</title>
+  <style th:utext="${inlineCss}"></style>
+  <style>
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .button-group button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .button-group button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .invite-link {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      color: #333;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+  <h1>スポコミ</h1>
+  <div class="hamburger-menu"  onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
+<div class="container">
+  <h1>招待リンク作成</h1>
+
+  <div class="input-group">
+    <label for="invite-count">招待可能回数</label>
+    <input type="number" id="invite-count" placeholder="例: 5">
+  </div>
+
+  <div class="button-group">
+    <button id="generate-button" onclick="generateInviteLink(this)"
+            th:data-my-community-id="${community_id}">
+      生成</button>
+    <input type="text" id="invite-link" class="invite-link" placeholder="ここにリンクが表示されます" readonly>
+    <button id="copy-button" onclick="copyToClipboard()" disabled>コピー</button>
+  </div>
+</div>
+
+<!-- サイドメニュー -->
+<div class="side-menu" id="side-menu">
+  <a th:href="@{/v1/mypage}">マイPage</a>
+  <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+  <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+  <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
+  <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+  <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+</div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<script th:utext="${inlineJs}"></script>
+
+<script>
+  function generateInviteLink_old() {
+    const inviteCount = document.getElementById('invite-count').value;
+    if (!inviteCount || inviteCount <= 0) {
+      alert('有効な招待可能回数を入力してください。');
+      return;
+    }
+
+    // Mocking invite link generation
+    const mockLink = `https://spocomi.com/invite?count=${inviteCount}&code=${Date.now()}`;
+
+    const inviteLinkInput = document.getElementById('invite-link');
+    inviteLinkInput.value = mockLink;
+
+    const copyButton = document.getElementById('copy-button');
+    copyButton.disabled = false;
+  }
+
+  function generateInviteLink(element) {
+    const inviteCount = document.getElementById('invite-count').value;
+    const communityId = element.getAttribute('data-my-community-id');
+    //const communityId = '12345'; // Replace with actual community ID as needed
+
+    if (!inviteCount || inviteCount <= 0) {
+      alert('有効な招待可能回数を入力してください。');
+      return;
+    }
+
+    const requestUrl = `/v1/api/community/invitation?community_id=${communityId}&max_uses=${inviteCount}`;
+
+    fetch(requestUrl, {
+      method: 'GET'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('招待リンクの生成に失敗しました。');
+      }
+      return response.text();
+    })
+    .then(link => {
+      const inviteLinkInput = document.getElementById('invite-link');
+      inviteLinkInput.value = link;
+
+      const copyButton = document.getElementById('copy-button');
+      copyButton.disabled = false;
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+  }
+
+
+  function copyToClipboard() {
+    const inviteLinkInput = document.getElementById('invite-link');
+    inviteLinkInput.select();
+    document.execCommand('copy');
+    alert('リンクをコピーしました！');
+  }
+</script>
+
+</body>
+</html>

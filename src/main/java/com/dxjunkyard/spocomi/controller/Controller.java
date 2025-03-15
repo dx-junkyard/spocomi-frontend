@@ -1,9 +1,12 @@
 package com.dxjunkyard.spocomi.controller;
 
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
+import com.dxjunkyard.spocomi.api.client.ReservationRestClient;
 import com.dxjunkyard.spocomi.api.client.UserRestClient;
 import com.dxjunkyard.spocomi.domain.resource.CommunityNetworking;
 import com.dxjunkyard.spocomi.domain.resource.request.FavoriteRequest;
+import com.dxjunkyard.spocomi.domain.resource.request.ReservationRequest;
+import com.dxjunkyard.spocomi.domain.resource.response.CommunityMemberList;
 import com.dxjunkyard.spocomi.domain.resource.response.CommunityName;
 import com.dxjunkyard.spocomi.service.CommunityService;
 import org.slf4j.Logger;
@@ -15,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/v1/api/community")
@@ -24,6 +30,9 @@ public class Controller {
     @Value("${file.upload-dir}")
     private String UPLOAD_DIR;
 
+    @Value("${service-url}")
+    private String serviceUrl;
+
     @Autowired
     private CommunityRestClient communityRestClient;
 
@@ -32,6 +41,9 @@ public class Controller {
 
     @Autowired
     private CommunityService communityService;
+
+    @Autowired
+    private ReservationRestClient reservationRestClient;
 
     @PostMapping("/favorite")
     public ResponseEntity<Integer> toggleFavorite(@RequestBody FavoriteRequest favoriteRequest,
@@ -45,6 +57,22 @@ public class Controller {
             return ResponseEntity.ok(favoriteRequest.getStatus());
         } else {
             return ResponseEntity.status(500).body(-1);
+        }
+    }
+
+    @GetMapping("/invitation")
+    public ResponseEntity<String> createInvitation( @CookieValue(value = "_token", defaultValue = "") String token,
+                                                    @RequestParam(value="community_id") Long communityId,
+                                                    @RequestParam(value="event_id", required = false) Long eventId,
+                                                    @RequestParam(value="max_uses", defaultValue = "1") Integer maxUses) {
+        String invitationCode = communityRestClient.createInvitationCode(token, communityId, eventId, maxUses);
+        String invitationUrl = serviceUrl + "/v1/user/line-login/?state=" + invitationCode;
+
+        if (invitationCode != null) {
+            // 更新後のステータスを返却
+            return ResponseEntity.ok(invitationUrl);
+        } else {
+            return ResponseEntity.status(500).body("-1");
         }
     }
 
@@ -80,6 +108,32 @@ public class Controller {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/my-community-list")
+    public ResponseEntity<?> getMyCommunityList(
+            @CookieValue(value="_token", required=false) String token ) {
+            logger.info("get my-community-list API");
+        List<CommunityMemberList> communityMemberList = communityRestClient.getMyCommunityList(token);
+
+        if (communityMemberList.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<CommunityMemberList>());
+        } else {
+            return ResponseEntity.ok(communityMemberList);
+        }
+    }
+
+    @PostMapping("/reservation/new")
+    public ResponseEntity<?> equipmentReservation(
+            @RequestBody ReservationRequest request,
+            @CookieValue(value = "_token", defaultValue = "") String token) {
+
+        Integer ret = reservationRestClient.postReservationRegistration(token,request);
+        // ここでデータベースの更新処理を行う（お気に入り状態の設定/解除）
+        //Long newGroupId = communityRestClient.createGroup(token, request);
+
+        return ResponseEntity.ok(ret);
+    }
+
 
     @PostMapping("/upload-image")
     public ResponseEntity<String> uploadImage(@RequestParam("imageUrl") MultipartFile file,
