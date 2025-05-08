@@ -17,7 +17,7 @@ public class ReservationRestClient {
     @Value("${backend-api.url}")
     private String backend_api_url;
 
-    public Integer postReservationRegistration(String token, ReservationRequest request) {
+    public String postReservationRegistration(String token, ReservationRequest request) {
         try {
             String url = backend_api_url + "/v1/api/equipment-reserve/new";
             HttpHeaders headers = new HttpHeaders();
@@ -25,12 +25,12 @@ public class ReservationRestClient {
             headers.add("Authorization", "Bearer " + token);
             HttpEntity<ReservationRequest> requestEntity = new HttpEntity<>(request,headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<Integer> response = restTemplate
-                    .exchange(url , HttpMethod.POST, requestEntity, Integer.class);
+            ResponseEntity<String> response = restTemplate
+                    .exchange(url , HttpMethod.POST, requestEntity, String.class);
             return response.getBody();
         } catch (RestClientException e) {
             logger.info("RestClient error : {}", e.toString());
-            return 1;
+            return "NG";
         }
     }
 

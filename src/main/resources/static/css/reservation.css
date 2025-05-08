@@ -123,12 +123,12 @@ body {
   .calendar-table-container {
     overflow: auto;
     max-height: 80vh;
-    width: 660px; /* 60px (時刻) + 3×150px (初期表示3日分) */
+    width: 660px; /* 20px (時刻) + 1050px (初期表示3日分) */
     margin: 0 auto;
     position: relative;
   }
   table {
-    width: 1110px; /* 60px + 7×150px */
+    width: 660px; /* 60px + 7×150px */
     border-collapse: collapse;
     table-layout: fixed;
   }
@@ -153,7 +153,7 @@ body {
     z-index: 2;
   }
   .time-label {
-    width: 60px;
+    width: 20px;
     background-color: #f9f9f9;
     font-weight: bold;
     position: sticky;
@@ -164,14 +164,14 @@ body {
     z-index: 3;
   }
   .day-column {
-    width: 60px;
+    width: 10px;
   }
   .weekday {
-    font-size: 1.4em;
+    font-size: 1.0em;
     display: block;
   }
   .date {
-    font-size: 0.9em;
+    font-size: 0.7em;
     display: block;
   }
   /* 背景の実線・破線 */

@@ -1,4 +1,5 @@
 
+/*
 const facilityClosureSchedules = {
   //"バレーボールセットA": [
   1: [
@@ -66,13 +67,28 @@ const equipmentReservations = {
     "設備のみ": [],
     "備品のみ": []
   };
-
+*/
 
 /**********************************************************
  * 週間カレンダー：モーダルダイアログ内の処理
  **********************************************************/
 const calendarOverlay = document.getElementById('calendarDialogOverlay');
 const closeCalendarBtn = document.getElementById('close-calendar');
+
+// カレンダーが表示されたときに設備予約情報を読み込む
+function showCalendarDialog() {
+  calendarOverlay.style.display = 'flex';
+
+  // 現在選択されている設備IDを取得
+  const equipmentSelect = document.getElementById('equipment-select');
+  if (equipmentSelect && equipmentSelect.value) {
+    // 設備IDが選択されている場合、その設備の予約情報を読み込む
+    loadEquipmentReservations(equipmentSelect.value);
+  } else {
+    console.log('設備が選択されていないか、設備選択要素が見つかりません');
+  }
+}
+
 closeCalendarBtn.onclick = function() {
   calendarOverlay.style.display = 'none';
   if (currentStep === 2) {
@@ -472,23 +488,132 @@ function registerClosedForDay(dayIndex, dateStr, startTime, endTime, closedText)
     }
 }
 
-function loadEquipmentReservations(equipmentId) {
+// 備品予約情報を取得する関数
+async function fetchEquipmentSchedules(equipmentId, startDate, endDate) {
+  try {
+    console.log(`fetchEquipmentSchedules 開始: equipmentId=${equipmentId}, startDate=${startDate}, endDate=${endDate}`);
+    // 備品予約情報の取得
+    const reservationsResponse = await fetch(
+        `/api/schedule/equipment/${equipmentId}/reservations?startDate=${startDate}&endDate=${endDate}`
+    );
+    if (!reservationsResponse.ok) {
+      throw new Error(`備品予約情報の取得に失敗: ${reservationsResponse.status} ${reservationsResponse.statusText}`);
+    }
+
+    const eqReservations = await reservationsResponse.json();
+    console.log("備品予約情報取得成功:", eqReservations);
+
+
+    // 備品貸出窓口の閉鎖スケジュールの取得
+    const closuresResponse = await fetch(
+        `/api/schedule/equipment/${equipmentId}/closures?startDate=${startDate}&endDate=${endDate}`
+    );
+
+    if (!closuresResponse.ok) {
+      throw new Error(`備品貸出窓口の閉鎖情報の取得に失敗: ${closuresResponse.status} ${closuresResponse.statusText}`);
+    }
+
+    const eqClosures = await closuresResponse.json();
+    console.log("備品貸出窓口の閉鎖情報取得成功:", eqClosures);
+
+    return { eqReservations, eqClosures };
+  } catch (error) {
+    console.error('備品スケジュールの取得に失敗しました:', error);
+    throw error;
+  }
+}
+
+// 設備予約情報を取得する関数
+async function fetchFacilitySchedules(facilityId, startDate, endDate) {
+  try {
+    // 設備予約情報の取得
+    const reservationsResponse = await fetch(
+        `/api/schedule/facility/${facilityId}/reservations?startDate=${startDate}&endDate=${endDate}`
+    );
+    if (!reservationsResponse.ok) {
+      throw new Error(`設備予約情報の取得に失敗: ${reservationsResponse.status} ${reservationsResponse.statusText}`);
+    }
+
+    const faReservations = await reservationsResponse.json();
+    console.log("施設予約情報取得成功:", faReservations);
+
+    // 設備閉鎖スケジュールの取得
+    const closuresResponse = await fetch(
+        `/api/schedule/facility/${facilityId}/closures?startDate=${startDate}&endDate=${endDate}`
+    );
+    if (!closuresResponse.ok) {
+      throw new Error(`施設貸出窓口の閉鎖情報の取得に失敗: ${closuresResponse.status} ${closuresResponse.statusText}`);
+    }
+
+    const faClosures = await closuresResponse.json();
+    console.log("施設の閉鎖情報取得成功:", faClosures);
+
+    return { faReservations, faClosures };
+  } catch (error) {
+    console.error('施設スケジュールの取得に失敗しました:', error);
+    throw error;
+  }
+}
+async function loadEquipmentReservations(equipmentId) {
     // 既存の予約イベントをクリア & 再描画
     clearAllEquipmentReservations();
-  
-    // 予約データを読み込んで反映
-    const events = equipmentReservations[equipmentId] || [];
-    events.forEach(ev => {
-      console.log(`reservations day : ${ev.day}, date: ${ev.date}`);
-      registerEventForDay(ev.day, ev.date, ev.startTime, ev.endTime, ev.eventText);
-    });
-  
-    // ★ 閉鎖データも読み込んで反映
-    const closedItems = facilityClosureSchedules[equipmentId] || [];
-    closedItems.forEach(closed => {
-      console.log(`closure day : ${closed.day}, date: ${closed.date}`);
-      registerClosedForDay(closed.day, closed.date, closed.startTime, closed.endTime, closed.eventText);
-    });
+
+    const facilityId = window.selectedFacility;
+    console.log(`facilityId: ${facilityId}, equipmentId: ${equipmentId}`);
+
+    // 週の開始日と終了日を取得
+    const startDate = currentMonday.toISOString().split('T')[0];
+    const endDate = new Date(currentMonday);
+    endDate.setDate(currentMonday.getDate() + 6);
+    const endDateStr = endDate.toISOString().split('T')[0];
+
+    try {
+      // 備品のスケジュールを取得
+      const { eqReservations, eqClosures } = await fetchEquipmentSchedules(
+          equipmentId,
+          startDate,
+          endDateStr
+      );
+
+      // 備品：予約情報を反映
+      eqReservations.forEach(ev => {
+        console.log(`reservations day : ${ev.day}, date: ${ev.date}`);
+        registerEventForDay(ev.day, ev.date, ev.startTime, ev.endTime, ev.eventText);
+      });
+
+      // 備品：貸出窓口閉鎖情報を反映
+      eqClosures.forEach(closed => {
+        console.log(`closure day : ${closed.day}, date: ${closed.date}`);
+        registerClosedForDay(closed.day, closed.date, closed.startTime, closed.endTime, closed.eventText);
+      });
+    } catch (error) {
+      console.error('備品スケジュールの読み込みに失敗しました:', error);
+      // エラーハンドリング（ユーザーへの通知など）
+    }
+
+    try {
+      // 設備のスケジュールを取得
+      const { faReservations, faClosures } = await fetchFacilitySchedules(
+          facilityId,
+          startDate,
+          endDateStr
+      );
+
+      // 設備：予約情報を反映
+      faReservations.forEach(ev => {
+        console.log(`reservations day : ${ev.day}, date: ${ev.date}`);
+        registerEventForDay(ev.day, ev.date, ev.startTime, ev.endTime, ev.eventText);
+      });
+
+      // 設備：貸出窓口閉鎖情報を反映
+      faClosures.forEach(closed => {
+        console.log(`closure day : ${closed.day}, date: ${closed.date}`);
+        registerClosedForDay(closed.day, closed.date, closed.startTime, closed.endTime, closed.eventText);
+      });
+    } catch (error) {
+      console.error('設備スケジュールの読み込みに失敗しました:', error);
+      // エラーハンドリング（ユーザーへの通知など）
+    }
 }
 
 

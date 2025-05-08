@@ -13,6 +13,12 @@
   <h1>予約フロー</h1>
 </header>
 
+<!-- communityIdとcommunityNameを保持するための隠しフィールドを追加 -->
+<input type="hidden" id="communityId" th:value="${communityId}" />
+<input type="hidden" id="communityName" th:value="${communityName}" />
+<input type="hidden" id="selectedFacilityId" th:value="${selectedFacilityId}" />
+<input type="hidden" id="selectedEquipmentId" th:value="${selectedEquipmentId}" />
+
 <div class="container">
   <!-- ステップバー -->
   <div class="step-bar">

@@ -22,12 +22,12 @@ public class NgrokSkipWarningFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        logger.info("filter start");
+        //logger.info("filter start");
 
         // ヘッダーにngrok-skip-browser-warningを追加
         response.setHeader("ngrok-skip-browser-warning", "true");
         filterChain.doFilter(request, response);
-        logger.info("filter end");
+        //logger.info("filter end");
 
     }
 }
