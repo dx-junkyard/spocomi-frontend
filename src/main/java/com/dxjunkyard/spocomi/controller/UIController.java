@@ -538,15 +538,19 @@ public class UIController {
         }
     }
 
-    @GetMapping("/reservation/{community_id}/new")
+    @GetMapping("/reservation/{communityId}/new")
     public String getNewReservation(
             @CookieValue(value="_token", required=false) String token,
-            @PathVariable Long community_id,
+            @PathVariable Long communityId,
             Model model) {
         logger.info("new reservation registration API");
         try {
             //Community newCommunity = new Community();
             //model.addAttribute(newCommunity);
+            // todo: community所属確認
+            String communityName = communityRestClient.getCommunityName(token, communityId);
+            model.addAttribute("communityId", communityId);
+            model.addAttribute("communityName", communityName);
             // css/jsの設定
             // resourceをそれぞれ1つの文字列に結合
             List<String> cssPaths = List.of("static/css/reservation.css");

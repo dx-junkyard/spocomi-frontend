@@ -127,7 +127,7 @@ public class Controller {
             @RequestBody ReservationRequest request,
             @CookieValue(value = "_token", defaultValue = "") String token) {
 
-        Integer ret = reservationRestClient.postReservationRegistration(token,request);
+        String ret = reservationRestClient.postReservationRegistration(token,request);
         // ここでデータベースの更新処理を行う（お気に入り状態の設定/解除）
         //Long newGroupId = communityRestClient.createGroup(token, request);
 

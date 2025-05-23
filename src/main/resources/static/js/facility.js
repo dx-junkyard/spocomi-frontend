@@ -192,7 +192,7 @@
       if(selectedEquipmentSet) {
         equipmentSelect.value = selectedEquipmentSet;
       }
-      loadEquipmentReservations(equipmentSelect.value);
+      //loadEquipmentReservations(equipmentSelect.value);
     }
   }
   

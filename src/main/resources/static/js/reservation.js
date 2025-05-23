@@ -1,7 +1,8 @@
 /**********************************************************
  * ★ 変更点1: グローバル変数で「ステップ2」で選んだ設備を記憶する
  **********************************************************/
-let selectedCommunity = "";       // ユーザーが選んだコミュニティの値を保持
+let selectedCommunityId = "";       // ユーザーが選んだコミュニティIDの値を保持
+let selectedCommunityName = "";       // ユーザーが選んだコミュニティ名の値を保持
 let selectedEquipmentSet = "";      // ユーザーが選んだ設備・備品セット名を保持
 let selectedFacility = "";          // ユーザーが選んだ施設の値を保持
 let recruitFriends = "";
@@ -156,7 +157,8 @@ function updateContent() {
       setTimeout(() => {
         populateCalendarEquipmentSelect();
         document.getElementById('openCalendarBtn').onclick = () => {
-          document.getElementById('calendarDialogOverlay').style.display = 'flex';
+          //document.getElementById('calendarDialogOverlay').style.display = 'flex';
+          showCalendarDialog();
         };
         if (selectedDateInfo.date && selectedDateInfo.startTime && selectedDateInfo.endTime) {
           document.getElementById('selectedDateTime').textContent =
@@ -182,7 +184,7 @@ function updateContent() {
         <h2>予約内容の確認</h2>
         <p>以下の内容で予約を行います。</p>
         <div style="text-align:left; display:inline-block;">
-          <p><strong>コミュニティ:</strong> ${selectedCommunity ? selectedCommunity : '未選択'}</p>
+          <p><strong>コミュニティ:</strong> ${selectedCommunityName ? selectedCommunityName : '未選択'}</p>
           <p><strong>施設:</strong> ${facility.name ? facility.name : '未選択'}</p>
           <p><strong>設備・備品セット:</strong> ${rentalItemLabel ? rentalItemLabel: '未選択'}</p>
           <p><strong>日時:</strong> ${
@@ -267,6 +269,17 @@ if (location.search) {
       }
     }
   }
+  if (parsedQuery.communityId) {
+    selectedCommunityId = parsedQuery.communityId;
+    console.log("selectedCommunityId set from URL:", selectedCommunityId); // 追加
+    // コミュニティ選択用プルダウンが存在する場合、値を設定
+    const communitySelect = document.getElementById('communitySelect');
+    if (communitySelect) {
+      communitySelect.value = selectedCommunityId;
+      // コミュニティメンバーの表示を更新
+      populateCommunityMembers(selectedCommunityId);
+    }
+  }
 }
 
 // 次のフロー or 予約の実行
@@ -279,7 +292,7 @@ nextBtn.addEventListener('click', async (e) => {
   } else {
     // 最終ステップ：ユーザーの予約内容をバックエンドへ送信
     const reservationData = {
-      communityId: selectedCommunity,
+      communityId: selectedCommunityId,
       facilityId: selectedFacility,
       equipmentId: selectedEquipmentSet,
       date: selectedDateInfo.date,
@@ -329,6 +342,19 @@ prevBtn.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // 隠しフィールドからcommunityIdを取得
+  const communityIdInput = document.getElementById('communityId');
+  const communityNameInput = document.getElementById('communityName');
+  if (communityIdInput && communityIdInput.value) {
+    selectedCommunityId = communityIdInput.value;
+    console.log("selectedCommunityId set from hidden field:", selectedCommunityId);
+  }
+  if (communityNameInput && communityNameInput.value) {
+    selectedCommunityName = communityNameInput.value;
+    console.log("selectedCommunityName set from hidden field:", selectedCommunityName);
+  }
+
+
   await fetchLocationData();
   updateStepBar();
   updateContent();  
@@ -448,10 +474,11 @@ function initFacilityMap() {
 }
 
 function setLocationPulldown(selectedLocation) {
+  window.selectedFacility = selectedLocation; //  施設選択の値をグローバル変数に保存
   nextBtn.classList.add('disabled');
   selectedFacility = selectedLocation;
   console.log("setLocationPulldownselectedLocation from locationSelect:", selectedLocation); // 追加
-  loadEquipmentReservations(selectedLocation);
+  //loadEquipmentReservations(selectedLocation);
   populateRentalItems(selectedLocation);
   // 施設変更で備品リスト更新
   document.getElementById('locationSelect').addEventListener('change', function(e) {
