@@ -1,0 +1,23 @@
+services:
+  spocomi-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: spocomi-frontend-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    command: ./gradlew bootRun --continuous
+
+    develop:
+      watch:
+        # ソースコードは sync で即時反映
+        - path: ./src
+          target: /home/gradle/project/src
+          action: sync
+        # ビルド定義が変わったらイメージを rebuild
+        - path: ./build.gradle
+          action: rebuild
+        - path: ./settings.gradle
+          action: rebuild

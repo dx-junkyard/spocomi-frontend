@@ -1,0 +1,17 @@
+# ─── spocomi-frontend dev Dockerfile ───
+# Gradle 7.6.1 + JDK11 を含む公式イメージを利用
+FROM gradle:7.6.1-jdk11
+
+# 作業ディレクトリを設定 (公式イメージのデフォルトユーザー gradle)
+WORKDIR /home/gradle/project
+
+# プロジェクトファイルを gradle ユーザーでコピー
+COPY --chown=gradle:gradle . .
+
+# リポジトリに wrapper がない場合は生成
+RUN gradle wrapper --gradle-version 7.6.1
+
+RUN gradle build -x test
+
+# 開発モード起動: ファイル変更を検知して自動再コンパイル
+CMD ["gradle", "--no-daemon", "bootRun", "--continuous"]
