@@ -6,12 +6,14 @@ FROM gradle:7.6.1-jdk11
 WORKDIR /home/gradle/project
 
 # プロジェクトファイルを gradle ユーザーでコピー
-COPY --chown=gradle:gradle . .
+COPY --chown=gradle:gradle build.gradle settings.gradle gradlew ./
 
 # リポジトリに wrapper がない場合は生成
 RUN gradle wrapper --gradle-version 7.6.1
 
+COPY --chown=gradle:gradle src/ src/
+
 RUN gradle build -x test
 
 # 開発モード起動: ファイル変更を検知して自動再コンパイル
-CMD ["gradle", "--no-daemon", "bootRun", "--continuous"]
+CMD ["sh", "-c", "gradle --no-daemon classes --continuous & exec gradle --no-daemon bootRun"]
