@@ -319,3 +319,9 @@ body {
   .closed {
     color: #999;
   }
+
+  .unavailable {
+    background-color: #ffcccc; /* 薄い赤色 */
+    color: #666;
+    cursor: not-allowed;
+  }
