@@ -1,125 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スポコミ - ホーム</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    header {
-      background-color: #8259f1;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
-    .card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      margin: 10px 0;
-    }
-    .card h3 {
-      margin: 0;
-      font-size: 1.5em;
-    }
-    .card p {
-      color: #666;
-    }
-    .buttons {
-      margin-top: 15px;
-    }
-    /* ボタンの色をヘッダーの紫に合わせて調整 */
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      margin-right: 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      color: white;
-      background-color: #1D4E89;  /* 調整後のボタン色 */
-      transition: background-color 0.3s ease;
-    }
-    .btn a { color: white; text-decoration: none;}
-    .btn:hover {
-      background-color: #163D6B;  /* ホバー時はさらにやや暗め */
-    }
-    /* 「お試し予約」の背景色を、やや落ち着いたゴールドトーンに調整 */
-    .highlight {
-      background-color: #AEDFF7;  /* 調整後の背景色 */
-    }
-    .feature {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-    }
-    .feature img {
-      width: 80px;
-      height: 80px;
-      border-radius: 10px;
-      margin-right: 15px;
-    }
-    footer {
-      background-color: #8259f1;
-      color: white;
-      text-align: center;
-      padding: 10px 0;
-      bottom: 0;
-      width: 100%;
-    }
-    .section-box {
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    }
-  </style>
-  <style th:utext="${inlineCss}"></style>
-</head>
-<body>
-  <!-- Header -->
-  <div th:replace="fragments/header :: header"></div>
-  <div class="container">
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>スポコミ - ホーム</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      header {
+        background-color: #8259f1;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin: 10px 0;
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 1.5em;
+      }
+      .card p {
+        color: #666;
+      }
+      .buttons {
+        margin-top: 15px;
+      }
+      /* ボタンの色をヘッダーの紫に合わせて調整 */
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-right: 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        color: white;
+        background-color: #1d4e89; /* 調整後のボタン色 */
+        transition: background-color 0.3s ease;
+      }
+      .btn a {
+        color: white;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background-color: #163d6b; /* ホバー時はさらにやや暗め */
+      }
+      /* 「お試し予約」の背景色を、やや落ち着いたゴールドトーンに調整 */
+      .highlight {
+        background-color: #aedff7; /* 調整後の背景色 */
+      }
+      .feature {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+      }
+      .feature img {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        margin-right: 15px;
+      }
+      footer {
+        background-color: #8259f1;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        bottom: 0;
+        width: 100%;
+      }
+      .section-box {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+      }
+    </style>
+    <style th:utext="${inlineCss}"></style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div th:replace="fragments/header :: header"></div>
+    <div class="container">
       <!-- お試し予約 -->
       <div class="card highlight">
-          <h3>簡単予約</h3>
-          <p>初心者でも簡単に始められる！お気軽に設備を予約してスポーツを体験してみましょう。</p>
-          <div class="btn">
-              <a id="reservationLink" th:href="@{/v1/reservation/new}">予約する</a>
-          </div>
+        <h3>簡単予約</h3>
+        <p>
+          初心者でも簡単に始められる！お気軽に設備を予約してスポーツを体験してみましょう。
+        </p>
+        <div class="btn">
+          <a id="reservationLink" th:href="@{/v1/reservation/new}">予約する</a>
+        </div>
       </div>
 
       <!-- コミュニティ選択 -->
       <div class="card">
-          <div class="content" id="content"></div>
+        <div class="content" id="content"></div>
       </div>
       <!-- コミュニティ登録 -->
       <div class="card">
-          <h3>コミュニティ新規作成</h3>
-          <p>コミュニティ作成はこちらから。誰でも簡単にコミュニティを作れます。</p>
-          <div class="btn">
-              <a th:href="@{/v1/community/new}">作成する</a>
-          </div>
+        <h3>コミュニティ新規作成</h3>
+        <p>
+          コミュニティ作成はこちらから。誰でも簡単にコミュニティを作れます。
+        </p>
+        <div class="btn">
+          <a th:href="@{/v1/community/new}">作成する</a>
+        </div>
       </div>
+    </div>
 
-  </div>
+    <!-- サイドメニュー -->
+    <div th:replace="fragments/side_menu :: sideMenu"></div>
 
-
-  <!-- サイドメニュー -->
-  <div th:replace="fragments/side_menu :: sideMenu"></div>
-
-  <script th:utext="${inlineJs}"></script>
-</body>
+    <script th:utext="${inlineJs}"></script>
+  </body>
 </html>
