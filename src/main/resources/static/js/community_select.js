@@ -69,11 +69,6 @@ async function updateContent() {
       <div class="input-group">
         <select id="communitySelect" style="margin-top: 5px; width: 200px;"></select>
       </div>
-      <div class="section-box">
-        <p>このコミュニティのメンバー</p>
-        <p>（現在、メンバー表示は利用できません）</p>
-        <div id="communityMembers" style="text-align: left; display: flex;"></div>
-      </div>
     `;
     let communityData = await fetchMyCommunityData();
     populateCommunitySelect(communityData);
