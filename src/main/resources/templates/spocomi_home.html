@@ -1,204 +1,203 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>スポコミ - ホーム</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            /* 紫系の淡い背景色でヘッダー色と親和性を高める */
-            background-color: #ede7f6;
-            color: #333333;
-        }
-        header {
-            background-color: #8259f1;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-        .hamburger-menu {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 24px;
-            height: 18px;
-        }
-        .hamburger-menu div {
-            height: 3px;
-            background-color: white;
-            border-radius: 2px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 10px;
-        }
-        .section-box {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: white;
-        }
-        .dropdown {
-            width: 100%;
-            padding: 8px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 8px;
-        }
-        .menu-tiles {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .tile-wrapper {
-            width: 100%;
-        }
-        .card {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: white;
-            /* 紫トーンの境界線を追加して背景と調和 */
-            border: 1px solid #d1c4e9;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            color: inherit;
-            aspect-ratio: 1 / 1;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .highlight {
-            background-color: #AEDFF7;
-            /* ハイライトカードも紫系背景に合わせる場合は下記を有効に */
-            /* background-color: #d1c4e9; color: white; */
-        }
-        .card h3 {
-            margin: 0;
-            font-size: 1.2em;
-            text-align: center;
-            padding: 0 5px;
-        }
-        .card-desc {
-            margin-top: 5px;
-            font-size: 0.9em;
-            color: #666;
-            text-align: center;
-            line-height: 1.2;
-        }
-        footer {
-            background-color: #8259f1;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-        }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        /* 紫系の淡い背景色でヘッダー色と親和性を高める */
+        background-color: #ede7f6;
+        color: #333333;
+      }
+      header {
+        background-color: #8259f1;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+      }
+      .hamburger-menu {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 24px;
+        height: 18px;
+      }
+      .hamburger-menu div {
+        height: 3px;
+        background-color: white;
+        border-radius: 2px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 0 10px;
+      }
+      .section-box {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        background-color: white;
+      }
+      .dropdown {
+        width: 100%;
+        padding: 8px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-top: 8px;
+      }
+      .menu-tiles {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .tile-wrapper {
+        width: 100%;
+      }
+      .card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        /* 紫トーンの境界線を追加して背景と調和 */
+        border: 1px solid #d1c4e9;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        aspect-ratio: 1 / 1;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .highlight {
+        background-color: #aedff7;
+        /* ハイライトカードも紫系背景に合わせる場合は下記を有効に */
+        /* background-color: #d1c4e9; color: white; */
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 1.2em;
+        text-align: center;
+        padding: 0 5px;
+      }
+      .card-desc {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #666;
+        text-align: center;
+        line-height: 1.2;
+      }
+      footer {
+        background-color: #8259f1;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        width: 100%;
+      }
     </style>
     <style th:utext="${inlineCss}"></style>
-</head>
-<body>
-<header>
-    <h1>スポコミ</h1>
-    <div class="hamburger-menu" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-</header>
-<div class="container">
-
-    <!-- コミュニティ選択プルダウン -->
-    <div class="section-box">
+  </head>
+  <body>
+    <!-- Header -->
+    <div th:replace="fragments/header :: header"></div>
+    <div class="container">
+      <!-- コミュニティ選択プルダウン -->
+      <div class="section-box">
         <h3>コミュニティを選択</h3>
         <div class="content" id="content"></div>
+      </div>
+
+      <!-- メニュータイル -->
+      <div class="menu-tiles">
+        <div class="tile-wrapper">
+          <div
+            class="card highlight"
+            id="reservationCard"
+            style="cursor: pointer"
+          >
+            <h3>簡単予約</h3>
+          </div>
+          <p class="card-desc">
+            初心者でも簡単に設備を予約してスポーツを体験！
+          </p>
+        </div>
+        <div class="tile-wrapper">
+          <!--a class="card" th:href="@{/v1/reservation/pickup}"-->
+          <a class="card">
+            <h3>予約受け取り</h3>
+          </a>
+          <p class="card-desc">予約した内容の確認・受け取りはこちら。</p>
+        </div>
+        <div class="tile-wrapper">
+          <a class="card" th:href="@{/v1/community/community_list}">
+            <h3>コミュニティ一覧</h3>
+          </a>
+          <p class="card-desc">参加可能なコミュニティを一覧で確認。</p>
+        </div>
+        <div class="tile-wrapper">
+          <a class="card" th:href="@{/v1/event/event_list}">
+            <h3>イベント一覧</h3>
+          </a>
+          <p class="card-desc">開催予定のイベントをチェック。</p>
+        </div>
+        <div class="tile-wrapper">
+          <a class="card" th:href="@{/v1/community/event/new/step1}">
+            <h3>イベント作成</h3>
+          </a>
+          <p class="card-desc">誰でも簡単にコミュニティを作成できます。</p>
+        </div>
+        <div class="tile-wrapper">
+          <a class="card" th:href="@{/v1/community/new}">
+            <h3>コミュニティ作成</h3>
+          </a>
+          <p class="card-desc">誰でも簡単にコミュニティを作成できます。</p>
+        </div>
+      </div>
     </div>
 
-    <!-- メニュータイル -->
-    <div class="menu-tiles">
-        <div class="tile-wrapper">
-            <div class="card highlight" id="reservationCard" style="cursor: pointer;">
-                <h3>簡単予約</h3>
-            </div>
-            <p class="card-desc">初心者でも簡単に設備を予約してスポーツを体験！</p>
-        </div>
-        <div class="tile-wrapper">
-            <!--a class="card" th:href="@{/v1/reservation/pickup}"-->
-            <a class="card">
-                <h3>予約受け取り</h3>
-            </a>
-            <p class="card-desc">予約した内容の確認・受け取りはこちら。</p>
-        </div>
-        <div class="tile-wrapper">
-            <a class="card" th:href="@{/v1/community/community_list}">
-                <h3>コミュニティ一覧</h3>
-            </a>
-            <p class="card-desc">参加可能なコミュニティを一覧で確認。</p>
-        </div>
-        <div class="tile-wrapper">
-            <a class="card" th:href="@{/v1/event/event_list}">
-                <h3>イベント一覧</h3>
-            </a>
-            <p class="card-desc">開催予定のイベントをチェック。</p>
-        </div>
-        <div class="tile-wrapper">
-            <a class="card" th:href="@{/v1/community/event/new/step1}">
-                <h3>イベント作成</h3>
-            </a>
-            <p class="card-desc">誰でも簡単にコミュニティを作成できます。</p>
-        </div>
-        <div class="tile-wrapper">
-            <a class="card" th:href="@{/v1/community/new}">
-                <h3>コミュニティ作成</h3>
-            </a>
-            <p class="card-desc">誰でも簡単にコミュニティを作成できます。</p>
-        </div>
-    </div>
+    <!-- サイドメニュー -->
+    <div th:replace="fragments/side_menu :: sideMenu"></div>
 
-</div>
-
-<!-- サイドメニュー -->
-<div class="side-menu" id="side-menu">
-    <a th:href="@{/v1/mypage}">マイページ</a>
-    <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
-    <a th:href="@{/v1/event/event_list}">イベント一覧</a>
-    <a th:href="@{/v1/community/new}">コミュニティ作成</a>
-    <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
-    <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
-</div>
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const reservationCard = document.getElementById('reservationCard');
+    <script th:utext="${inlineJs}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const reservationCard = document.getElementById("reservationCard")
         if (reservationCard) {
-            reservationCard.addEventListener('click', function() {
-                const communitySelect = document.getElementById('communitySelect');
-                if (communitySelect && communitySelect.value) {
-                    window.location.href = `/v1/reservation/${communitySelect.value}/new`;
-                } else {
-                    alert('予約を行うにはコミュニティを選択してください。');
-                }
-            });
+          reservationCard.addEventListener("click", function () {
+            const communitySelect = document.getElementById("communitySelect")
+            if (communitySelect && communitySelect.value) {
+              window.location.href = `/v1/reservation/${communitySelect.value}/new`
+            } else {
+              alert("予約を行うにはコミュニティを選択してください。")
+            }
+          })
         }
-    });
-</script>
+      })
+    </script>
 
-<script th:utext="${inlineJs}"></script>
-</body>
+    <script th:utext="${inlineJs}"></script>
+  </body>
 </html>

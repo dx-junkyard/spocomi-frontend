@@ -9,14 +9,7 @@
 <body>
 
     <!-- Header -->
-    <div class="header">
-        <h1>スポコミ</h1>
-        <div class="hamburger-menu"  onclick="toggleMenu()">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
+    <div th:replace="fragments/header :: header"></div>
 
     <!-- Main Container -->
     <div class="container" th:object="${community}">
@@ -75,20 +68,10 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        ©spocomi
-    </div>
+    <div th:replace="fragments/footer :: footer"></div>
 
     <!-- サイドメニュー -->
-    <div class="side-menu" id="side-menu">
-        <a th:href="@{/v1/mypage}">マイPage</a>
-        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
-        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
-        <a th:href="@{/v1/event/new}">イベント作成</a>
-        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
-        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
-    </div>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div th:replace="fragments/side_menu :: sideMenu"></div>
     <script th:src="@{/js/spocomi_menu.js}"></script>
     <script>
         // Function to show the invite dialog

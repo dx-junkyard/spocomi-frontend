@@ -167,15 +167,7 @@
     </div>
 
     <!-- サイドメニュー -->
-    <div class="side-menu" id="side-menu">
-        <a th:href="@{/v1/mypage}">マイPage</a>
-        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
-        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
-        <a th:href="@{/v1/event/new/step1}">イベント作成</a>
-        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
-        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
-    </div>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div th:replace="fragments/side_menu :: sideMenu"></div>
     <script th:utext="${inlineJs}"></script>
     <script>
         function previewImage(event) {
