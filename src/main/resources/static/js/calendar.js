@@ -340,7 +340,7 @@ function generateCalendarRows(monday) {
         const dd = pad(cellDate.getDate());
         cell.dataset.date = `${yyyy}-${mm}-${dd}`;
         cell.addEventListener("mousedown", (e) => {
-          if (!cell.classList.contains("event")) {
+          if (!cell.classList.contains("event") && !cell.classList.contains("unavailable") && !cell.classList.contains("closed")) {
             isDragging = true;
             dragStartCell = cell;
             dragEndCell = cell;
@@ -368,7 +368,7 @@ function generateCalendarRows(monday) {
         cell.addEventListener("touchstart", (e) => {
           // 複数タッチの場合、最初のタッチポイントを使用
           //const touch = e.touches[0];
-          if (!cell.classList.contains("event")) {
+          if (!cell.classList.contains("event") && !cell.classList.contains("unavailable") && !cell.classList.contains("closed")) {
             isDragging = true;
             dragStartCell = cell;
             dragEndCell = cell;
@@ -554,6 +554,37 @@ async function fetchFacilitySchedules(facilityId, startDate, endDate) {
     throw error;
   }
 }
+function getDayIndexFromDate(dateStr) {
+  const date = new Date(dateStr);
+  const day = date.getDay(); // 0=日曜, 1=月曜, ...
+  return day === 0 ? 6 : day - 1; // カレンダーが月曜始まりの場合の調整
+}
+
+function markSlotAsUnavailable(dayIndex, dateStr, startTime, endTime) {
+  console.log(`[markSlotAsUnavailable] 予約不可処理開始: date=${dateStr}, startTime=${startTime}, endTime=${endTime}`);
+  const tbody = document.getElementById("calendar-body");
+  const rows = tbody.getElementsByTagName("tr");
+  const startM = timeToMinutes(startTime);
+  const endM = timeToMinutes(endTime);
+  
+  for (let i = 0; i < rows.length; i++) {
+    const cell = rows[i].children[parseInt(dayIndex) + 1];
+    if (cell.dataset.date === dateStr) {
+      const cellM = timeToMinutes(cell.dataset.time);
+      if (cellM >= startM && cellM < endM) {
+        cell.classList.add("unavailable");
+        
+        // 最初のセルにのみテキストを設定
+        if (cellM === startM) {
+          cell.textContent = "予約不可";
+        }
+        
+        cell.style.pointerEvents = "none";
+      }
+    }
+  }
+}
+
 async function loadEquipmentReservations(equipmentId) {
     // 既存の予約イベントをクリア & 再描画
     clearAllEquipmentReservations();
@@ -567,6 +598,8 @@ async function loadEquipmentReservations(equipmentId) {
     endDate.setDate(currentMonday.getDate() + 6);
     const endDateStr = endDate.toISOString().split('T')[0];
 
+    let reservedTimeSlots = {};
+
     try {
       // 備品のスケジュールを取得
       const { eqReservations, eqClosures } = await fetchEquipmentSchedules(
@@ -578,6 +611,10 @@ async function loadEquipmentReservations(equipmentId) {
       // 備品：予約情報を反映
       eqReservations.forEach(ev => {
         console.log(`reservations day : ${ev.day}, date: ${ev.date}`);
+        const key = `${ev.date}_${ev.startTime}_${ev.endTime}`;
+        reservedTimeSlots[key] = reservedTimeSlots[key] || { facility: false, equipment: false };
+        reservedTimeSlots[key].equipment = true;
+        
         registerEventForDay(ev.day, ev.date, ev.startTime, ev.endTime, ev.eventText);
       });
 
@@ -602,6 +639,10 @@ async function loadEquipmentReservations(equipmentId) {
       // 設備：予約情報を反映
       faReservations.forEach(ev => {
         console.log(`reservations day : ${ev.day}, date: ${ev.date}`);
+        const key = `${ev.date}_${ev.startTime}_${ev.endTime}`;
+        reservedTimeSlots[key] = reservedTimeSlots[key] || { facility: false, equipment: false };
+        reservedTimeSlots[key].facility = true;
+        
         registerEventForDay(ev.day, ev.date, ev.startTime, ev.endTime, ev.eventText);
       });
 
@@ -614,6 +655,14 @@ async function loadEquipmentReservations(equipmentId) {
       console.error('設備スケジュールの読み込みに失敗しました:', error);
       // エラーハンドリング（ユーザーへの通知など）
     }
+    
+    Object.entries(reservedTimeSlots).forEach(([key, status]) => {
+      if (status.facility || status.equipment) {
+        const [date, startTime, endTime] = key.split('_');
+        const dayIndex = getDayIndexFromDate(date);
+        markSlotAsUnavailable(dayIndex, date, startTime, endTime);
+      }
+    });
 }
 
 
