@@ -8,7 +8,14 @@
 </head>
 <body>
     <!-- Header -->
-    <div th:replace="fragments/header :: header"></div>
+    <div class="header">
+        <h1>スポコミ</h1>
+        <div class="hamburger-menu" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
 
     <div class="container">
 
@@ -62,10 +69,20 @@
     </div>
 
     <!-- Footer -->
-    <div th:replace="fragments/footer :: footer"></div>
+    <div class="footer">
+        ©spocomi
+    </div>
 
     <!-- サイドメニュー -->
-    <div th:replace="fragments/side_menu :: sideMenu"></div>
+    <div class="side-menu" id="side-menu">
+        <a th:href="@{/v1/mypage}">マイPage</a>
+        <a th:href="@{/v1/community/community_list}">コミュニティ一覧</a>
+        <a th:href="@{/v1/event/event_list}">イベント一覧</a>
+        <a th:href="@{/v1/community/new}">コミュニティ作成</a>
+        <a th:href="@{/v1/community/event/new/step1}">イベント作成</a>
+        <a th:href="@{/v1/community/new_group}">コミュニティ連携</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script th:utext="${inlineJs}"></script>
     <script>
         // Function to show the invite dialog
