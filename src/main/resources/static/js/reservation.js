@@ -510,7 +510,210 @@ function setLocationPulldown(selectedLocation) {
       radio.addEventListener('change', (e) => {
         selectedEquipmentSet = e.target.value;
         nextBtn.classList.remove('disabled');
+        fetchReservationStatusList();
       });
     });
   });
+  fetchReservationStatusList();
+}
+
+const STATUS_TEXT = {
+  0: '未利用（チェックイン待ち）',
+  1: '使用中（チェックアウト待ち）',
+  2: '返却済'
+};
+
+function handleApiErrorResponse(response) {
+  if (response.status === 400) {
+    alert('入力内容に誤りがあります。内容をご確認ください。');
+    return true;
+  }
+  if (response.status === 401) {
+    alert('認証に失敗しました。再度ログインしてください。');
+    return true;
+  }
+  return false;
+}
+
+function calculateDateRange() {
+  const startDate = selectedDateInfo.date ? new Date(selectedDateInfo.date) : new Date();
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 6);
+  const toDateString = (date) => date.toISOString().split('T')[0];
+  return { start: toDateString(startDate), end: toDateString(endDate) };
+}
+
+async function fetchReservationStatusList() {
+  if (!selectedFacility && !selectedEquipmentSet) {
+    return;
+  }
+
+  const statusContainer = document.getElementById('reservationStatusList');
+  if (!statusContainer) return;
+
+  const { start, end } = calculateDateRange();
+  const requests = [];
+
+  if (selectedFacility) {
+    requests.push(
+        fetch(`/v1/api/facility/${selectedFacility}/reservations?startDate=${start}&endDate=${end}`)
+            .then(r => ({ type: 'facility', response: r }))
+    );
+  }
+
+  if (selectedEquipmentSet) {
+    requests.push(
+        fetch(`/v1/api/equipment/${selectedEquipmentSet}/reservations?startDate=${start}&endDate=${end}`)
+            .then(r => ({ type: 'equipment', response: r }))
+    );
+  }
+
+  if (requests.length === 0) return;
+
+  try {
+    const results = await Promise.all(requests);
+    const reservations = [];
+
+    for (const { response } of results) {
+      if (handleApiErrorResponse(response)) {
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(`予約情報の取得に失敗しました (${response.status})`);
+      }
+      const data = await response.json();
+      reservations.push(...data);
+    }
+
+    renderReservationStatus(reservations);
+  } catch (error) {
+    console.error(error);
+    alert('予約情報の取得に失敗しました。時間をおいて再度お試しください。');
+  }
+}
+
+function renderReservationStatus(reservations) {
+  const container = document.getElementById('reservationStatusList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!reservations || reservations.length === 0) {
+    container.innerHTML = '<p>表示できる予約がありません。</p>';
+    return;
+  }
+
+  reservations.forEach((res) => {
+    const statusText = STATUS_TEXT[res.status] || '状態不明';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'reservation-status-item';
+
+    const info = document.createElement('p');
+    const label = res.eventText || '予約';
+    info.textContent = `${label} / ${res.date || ''} ${res.startTime || ''} - ${res.endTime || ''}`;
+
+    const status = document.createElement('p');
+    status.textContent = `ステータス: ${statusText}`;
+
+    wrapper.appendChild(info);
+    wrapper.appendChild(status);
+
+    const buttonArea = document.createElement('div');
+    buttonArea.className = 'reservation-status-actions';
+
+    if (res.status === 0) {
+      const checkInBtn = document.createElement('button');
+      checkInBtn.textContent = 'チェックイン';
+      checkInBtn.className = 'btn';
+      checkInBtn.addEventListener('click', () => handleCheckAction('check-in', res));
+      buttonArea.appendChild(checkInBtn);
+    }
+
+    if (res.status === 1) {
+      const checkOutBtn = document.createElement('button');
+      checkOutBtn.textContent = '返却（チェックアウト）';
+      checkOutBtn.className = 'btn';
+      checkOutBtn.addEventListener('click', () => handleCheckAction('check-out', res));
+      buttonArea.appendChild(checkOutBtn);
+    }
+
+    wrapper.appendChild(buttonArea);
+    container.appendChild(wrapper);
+  });
+}
+
+async function handleCheckAction(action, reservation) {
+  const counterId = reservation.counterId || Number(prompt('カウンターIDを入力してください')); 
+  const userId = reservation.userId || Number(prompt('ユーザーIDを入力してください'));
+
+  if (!counterId || !userId) {
+    alert('カウンターIDとユーザーIDが必要です。');
+    return;
+  }
+
+  const endpoint = action === 'check-in' ? '/v1/api/check-in' : '/v1/api/check-out';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ counterId, userId })
+    });
+
+    if (handleApiErrorResponse(response)) {
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error('操作に失敗しました');
+    }
+
+    alert(action === 'check-in' ? 'チェックインが完了しました。' : '返却が完了しました。');
+    fetchReservationStatusList();
+  } catch (error) {
+    console.error(error);
+    alert('操作に失敗しました。時間をおいて再度お試しください。');
+  }
+}
+
+async function fetchEquipmentSchedules(equipmentId, startDate, endDate) {
+  try {
+    const response = await fetch(`/v1/api/equipment/${equipmentId}/reservations?startDate=${startDate}&endDate=${endDate}`);
+    if (handleApiErrorResponse(response)) {
+      return { eqReservations: [], eqClosures: [] };
+    }
+    if (!response.ok) {
+      throw new Error(`備品予約情報の取得に失敗: ${response.status}`);
+    }
+    const eqReservations = await response.json();
+    eqReservations.forEach(ev => {
+      if (!ev.eventText) {
+        ev.eventText = '予約';
+      }
+    });
+    return { eqReservations, eqClosures: [] };
+  } catch (error) {
+    console.error('備品スケジュールの取得に失敗しました:', error);
+    return { eqReservations: [], eqClosures: [] };
+  }
+}
+
+async function fetchFacilitySchedules(facilityId, startDate, endDate) {
+  try {
+    const response = await fetch(`/v1/api/facility/${facilityId}/reservations?startDate=${startDate}&endDate=${endDate}`);
+    if (handleApiErrorResponse(response)) {
+      return { faReservations: [], faClosures: [] };
+    }
+    if (!response.ok) {
+      throw new Error(`施設予約情報の取得に失敗: ${response.status}`);
+    }
+    const faReservations = await response.json();
+    faReservations.forEach(ev => {
+      if (!ev.eventText) {
+        ev.eventText = '予約';
+      }
+    });
+    return { faReservations, faClosures: [] };
+  } catch (error) {
+    console.error('設備スケジュールの取得に失敗しました:', error);
+    return { faReservations: [], faClosures: [] };
+  }
 }

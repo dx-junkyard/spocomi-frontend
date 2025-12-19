@@ -2,6 +2,7 @@ package com.dxjunkyard.spocomi.controller;
 
 import com.dxjunkyard.spocomi.api.client.CommunityRestClient;
 import com.dxjunkyard.spocomi.api.client.EventRestClient;
+import com.dxjunkyard.spocomi.api.client.ReservationRestClient;
 import com.dxjunkyard.spocomi.domain.resource.*;
 import com.dxjunkyard.spocomi.domain.resource.response.*;
 import com.dxjunkyard.spocomi.service.CommunityService;
@@ -13,11 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.http.Cookie;
@@ -25,7 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -60,6 +65,9 @@ public class UIController {
 
     @Autowired
     private CommunityService communityService;
+
+    @Autowired
+    private ReservationRestClient reservationRestClient;
 
     @GetMapping("/user/line-login")
     @ResponseBody
@@ -144,6 +152,71 @@ public class UIController {
             logger.info("RestClient error : {}", e.toString());
             return "error"; // error page遷移
         }
+    }
+
+    @GetMapping("/api/equipment/{equipmentId}/reservations")
+    @ResponseBody
+    public ResponseEntity<?> getEquipmentReservations(
+            @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long equipmentId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            return ResponseEntity.ok(
+                    reservationRestClient.getEquipmentReservations(token, equipmentId, startDate, endDate)
+            );
+        } catch (Exception e) {
+            logger.info("RestClient error : {}", e.toString());
+            return ResponseEntity.internalServerError().body(List.of());
+        }
+    }
+
+    @GetMapping("/api/facility/{facilityId}/reservations")
+    @ResponseBody
+    public ResponseEntity<?> getFacilityReservations(
+            @CookieValue(value="_token", required=false) String token,
+            @PathVariable Long facilityId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            return ResponseEntity.ok(
+                    reservationRestClient.getFacilityReservations(token, facilityId, startDate, endDate)
+            );
+        } catch (Exception e) {
+            logger.info("RestClient error : {}", e.toString());
+            return ResponseEntity.internalServerError().body(List.of());
+        }
+    }
+
+    @PostMapping("/api/check-in")
+    @ResponseBody
+    public ResponseEntity<String> postCheckIn(
+            @CookieValue(value="_token", required=false) String token,
+            @RequestBody Map<String, Long> payload) {
+        return handleCheckAction(token, payload, true);
+    }
+
+    @PostMapping("/api/check-out")
+    @ResponseBody
+    public ResponseEntity<String> postCheckOut(
+            @CookieValue(value="_token", required=false) String token,
+            @RequestBody Map<String, Long> payload) {
+        return handleCheckAction(token, payload, false);
+    }
+
+    private ResponseEntity<String> handleCheckAction(String token, Map<String, Long> payload, boolean isCheckIn) {
+        Long counterId = payload.get("counterId");
+        Long userId = payload.get("userId");
+        if (counterId == null || userId == null) {
+            return ResponseEntity.badRequest().body("counterId and userId are required");
+        }
+        String result = isCheckIn
+                ? reservationRestClient.postCheckIn(token, counterId, userId)
+                : reservationRestClient.postCheckOut(token, counterId, userId);
+        if ("NG".equalsIgnoreCase(result)) {
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok(result);
     }
 
     /**

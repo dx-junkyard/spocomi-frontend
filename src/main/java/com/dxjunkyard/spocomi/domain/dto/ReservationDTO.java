@@ -29,4 +29,16 @@ public class ReservationDTO {
 
     // イベントテキスト（"予約"など）
     private String eventText;
+
+    // 予約の状態: 0=未利用, 1=使用中, 2=返却済
+    private Integer status;
+
+    // 予約の識別子
+    private Long reservationId;
+
+    // 窓口カウンターID
+    private Long counterId;
+
+    // 予約したユーザーID
+    private Long userId;
 }
